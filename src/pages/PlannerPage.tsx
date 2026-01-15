@@ -1,11 +1,41 @@
 import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Map, MessageCircle, CalendarDays, Lock, Check, Sparkles, Calendar } from "lucide-react";
+import { Map, MessageCircle, ChevronDown, Check, Calendar } from "lucide-react";
 import PlannerMap from "@/components/PlannerMap";
 import ChatRoom from "@/components/ChatRoom";
 import Itinerary from "@/components/Itinerary";
 import { usePurchase } from "@/hooks/usePurchase";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+// Location data structure
+const locationData = {
+  countries: [
+    {
+      name: "台灣",
+      cities: [
+        {
+          name: "台北市",
+          districts: ["大安區", "信義區", "中山區", "松山區", "內湖區", "士林區"],
+        },
+        {
+          name: "新北市",
+          districts: ["板橋區", "新莊區", "中和區", "永和區", "三重區", "淡水區"],
+        },
+        {
+          name: "台中市",
+          districts: ["西屯區", "南屯區", "北屯區", "西區", "中區", "東區"],
+        },
+      ],
+    },
+  ],
+};
 
 const PlannerPage = () => {
   const { 
@@ -17,123 +47,43 @@ const PlannerPage = () => {
     confirmPurchase, 
     calculatePrice 
   } = usePurchase();
-  const [activeTab, setActiveTab] = useState<"map" | "chat" | "itinerary">("map");
+  const [activeTab, setActiveTab] = useState<"map" | "chat">("map");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  
+  // Location selection state
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [selectedDays, setSelectedDays] = useState<number>(3);
+  const [selectedStartDate, setSelectedStartDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
 
-  // Not purchased - show intro page
-  if (!isPurchased) {
-    return (
-      <PageLayout>
-        <div className="flex flex-col min-h-full px-4 py-6">
-          <div className="flex-1 flex flex-col items-center justify-center text-center">
-            {/* Icon */}
-            <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mb-6">
-              <Sparkles className="w-12 h-12 text-primary" />
-            </div>
+  // Get available options based on selection
+  const availableCities = locationData.countries.find(c => c.name === selectedCountry)?.cities || [];
+  const availableDistricts = availableCities.find(c => c.name === selectedCity)?.districts || [];
 
-            {/* Title */}
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              旅程策劃服務
-            </h1>
-            <p className="text-muted mb-8 max-w-sm">
-              專業策劃師為您規劃完美行程，提供線上諮詢、線下協助及旅遊整合服務
-            </p>
+  const handleConfirmPurchase = () => {
+    setDays(selectedDays);
+    setStartDate(selectedStartDate);
+    confirmPurchase();
+    setSheetOpen(false);
+  };
 
-            {/* Features */}
-            <div className="w-full max-w-sm space-y-4 mb-8">
-              {[
-                { icon: "🗺️", title: "即時位置共享", desc: "隨時掌握團員位置" },
-                { icon: "💬", title: "專屬聊天室", desc: "與策劃師和團員即時溝通" },
-                { icon: "📋", title: "行程規劃", desc: "完整的每日行程安排" },
-                { icon: "🆘", title: "緊急協助", desc: "24小時線下安全支援" },
-              ].map((feature, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 p-4 bg-card rounded-2xl border border-border text-left"
-                >
-                  <span className="text-2xl">{feature.icon}</span>
-                  <div>
-                    <p className="font-medium text-foreground">{feature.title}</p>
-                    <p className="text-sm text-muted">{feature.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+  const resetSelection = () => {
+    setSelectedCountry("");
+    setSelectedCity("");
+    setSelectedDistrict("");
+    setSelectedDays(3);
+    setSelectedStartDate(new Date().toISOString().split('T')[0]);
+  };
 
-            {/* Days selector */}
-            <div className="w-full max-w-sm mb-4">
-              <label className="text-sm font-medium text-foreground mb-2 block text-left">選擇天數</label>
-              <div className="flex gap-2 flex-wrap">
-                {[1, 2, 3, 4, 5].map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => setDays(d)}
-                    className={`flex-1 min-w-[56px] py-3 rounded-xl font-medium transition-all ${
-                      days === d
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-card border border-border text-foreground hover:bg-secondary'
-                    }`}
-                  >
-                    {d} 天
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Date picker */}
-            <div className="w-full max-w-sm mb-6">
-              <label className="text-sm font-medium text-foreground mb-2 block text-left">旅程開始日期</label>
-              <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-            </div>
-
-            {/* Pricing */}
-            <div className="w-full max-w-sm p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl border border-primary/20 mb-6">
-              <p className="text-sm text-muted mb-2">服務費用</p>
-              <div className="flex items-baseline justify-center gap-1 mb-1">
-                <span className="text-4xl font-bold text-foreground">NT$ {calculatePrice(days)}</span>
-              </div>
-              <p className="text-sm text-muted mb-4">
-                NT$ 299 × {days} 天
-              </p>
-              <ul className="space-y-2 text-sm text-left">
-                {["專業策劃師一對一服務", "無限次團員邀請", `${days} 天行程表規劃工具`, "緊急聯絡支援"].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-primary" />
-                    <span className="text-foreground">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Purchase button */}
-            <Button
-              onClick={confirmPurchase}
-              className="w-full max-w-sm h-14 text-lg font-bold rounded-2xl bg-primary hover:bg-primary/90"
-            >
-              <Lock className="w-5 h-5 mr-2" />
-              確認購買
-            </Button>
-          </div>
-        </div>
-      </PageLayout>
-    );
-  }
-
-  // Purchased - show planner tabs
   return (
     <PageLayout>
       <div className="flex flex-col min-h-full">
-        {/* Top Navigation Tabs */}
+        {/* Top Navigation with Itinerary in center */}
         <div className="bg-background border-b border-border">
-          <div className="flex">
+          <div className="flex items-center">
             <button
               onClick={() => setActiveTab("map")}
               className={`flex-1 py-4 text-sm font-medium transition-all relative flex items-center justify-center gap-2 ${
@@ -146,6 +96,179 @@ const PlannerPage = () => {
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
               )}
             </button>
+
+            {/* Center - Itinerary Sheet Trigger */}
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className="flex-1 py-4 text-sm font-medium transition-all relative flex items-center justify-center gap-1 text-primary"
+                >
+                  📋 {isPurchased ? "我的行程表" : "建立行程"}
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+                <SheetHeader className="pb-4">
+                  <SheetTitle className="text-xl">
+                    {isPurchased ? "我的行程表" : "建立新行程"}
+                  </SheetTitle>
+                </SheetHeader>
+
+                {isPurchased ? (
+                  // Show itinerary if purchased
+                  <div className="overflow-y-auto h-[calc(85vh-80px)] -mx-6 px-6">
+                    <Itinerary />
+                  </div>
+                ) : (
+                  // Show purchase flow if not purchased
+                  <div className="space-y-5 overflow-y-auto h-[calc(85vh-80px)]">
+                    {/* Country selection */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">選擇國家</label>
+                      <div className="flex gap-2 flex-wrap">
+                        {locationData.countries.map((country) => (
+                          <button
+                            key={country.name}
+                            onClick={() => {
+                              setSelectedCountry(country.name);
+                              setSelectedCity("");
+                              setSelectedDistrict("");
+                            }}
+                            className={`px-4 py-2.5 rounded-xl font-medium transition-all ${
+                              selectedCountry === country.name
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-card border border-border text-foreground hover:bg-secondary'
+                            }`}
+                          >
+                            🇹🇼 {country.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* City selection */}
+                    {selectedCountry && (
+                      <div className="space-y-2 animate-fade-in">
+                        <label className="text-sm font-medium text-foreground">選擇城市</label>
+                        <div className="flex gap-2 flex-wrap">
+                          {availableCities.map((city) => (
+                            <button
+                              key={city.name}
+                              onClick={() => {
+                                setSelectedCity(city.name);
+                                setSelectedDistrict("");
+                              }}
+                              className={`px-4 py-2.5 rounded-xl font-medium transition-all ${
+                                selectedCity === city.name
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-card border border-border text-foreground hover:bg-secondary'
+                              }`}
+                            >
+                              {city.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* District selection */}
+                    {selectedCity && (
+                      <div className="space-y-2 animate-fade-in">
+                        <label className="text-sm font-medium text-foreground">選擇區域</label>
+                        <div className="flex gap-2 flex-wrap">
+                          {availableDistricts.map((district) => (
+                            <button
+                              key={district}
+                              onClick={() => setSelectedDistrict(district)}
+                              className={`px-4 py-2.5 rounded-xl font-medium transition-all ${
+                                selectedDistrict === district
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-card border border-border text-foreground hover:bg-secondary'
+                              }`}
+                            >
+                              {district}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Days selection */}
+                    {selectedDistrict && (
+                      <div className="space-y-2 animate-fade-in">
+                        <label className="text-sm font-medium text-foreground">選擇天數</label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((d) => (
+                            <button
+                              key={d}
+                              onClick={() => setSelectedDays(d)}
+                              className={`flex-1 py-3 rounded-xl font-medium transition-all ${
+                                selectedDays === d
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-card border border-border text-foreground hover:bg-secondary'
+                              }`}
+                            >
+                              {d} 天
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Date picker */}
+                    {selectedDistrict && (
+                      <div className="space-y-2 animate-fade-in">
+                        <label className="text-sm font-medium text-foreground">旅程開始日期</label>
+                        <div className="relative">
+                          <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
+                          <input
+                            type="date"
+                            value={selectedStartDate}
+                            onChange={(e) => setSelectedStartDate(e.target.value)}
+                            min={new Date().toISOString().split('T')[0]}
+                            className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Pricing and confirm */}
+                    {selectedDistrict && (
+                      <div className="space-y-4 pt-2 animate-fade-in">
+                        <div className="p-5 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border border-primary/20">
+                          <div className="text-center mb-3">
+                            <p className="text-sm text-muted mb-1">服務費用</p>
+                            <span className="text-3xl font-bold text-foreground">
+                              NT$ {calculatePrice(selectedDays)}
+                            </span>
+                            <p className="text-sm text-muted mt-1">
+                              NT$ 299 × {selectedDays} 天
+                            </p>
+                          </div>
+                          
+                          <div className="text-sm space-y-1.5 text-left">
+                            {["專業策劃師一對一服務", "無限次團員邀請", `${selectedDays} 天行程表規劃工具`, "緊急聯絡支援"].map((item, i) => (
+                              <div key={i} className="flex items-center gap-2">
+                                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                                <span className="text-foreground">{item}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={handleConfirmPurchase}
+                          className="w-full h-14 text-lg font-bold rounded-2xl bg-primary hover:bg-primary/90"
+                        >
+                          確認購買
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </SheetContent>
+            </Sheet>
+
             <button
               onClick={() => setActiveTab("chat")}
               className={`flex-1 py-4 text-sm font-medium transition-all relative flex items-center justify-center gap-2 ${
@@ -158,18 +281,6 @@ const PlannerPage = () => {
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
               )}
             </button>
-            <button
-              onClick={() => setActiveTab("itinerary")}
-              className={`flex-1 py-4 text-sm font-medium transition-all relative flex items-center justify-center gap-2 ${
-                activeTab === "itinerary" ? "text-primary" : "text-muted"
-              }`}
-            >
-              <CalendarDays className="w-4 h-4" />
-              行程表
-              {activeTab === "itinerary" && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
-              )}
-            </button>
           </div>
         </div>
 
@@ -177,7 +288,6 @@ const PlannerPage = () => {
         <div className="flex-1 px-4 pt-6 pb-4 overflow-y-auto">
           {activeTab === "map" && <PlannerMap />}
           {activeTab === "chat" && <ChatRoom />}
-          {activeTab === "itinerary" && <Itinerary />}
         </div>
       </div>
     </PageLayout>

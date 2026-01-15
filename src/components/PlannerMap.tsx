@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Users, Navigation, RefreshCw } from "lucide-react";
+import { MapPin, Users, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import InviteTeamMember from "./InviteTeamMember";
 
@@ -96,9 +96,6 @@ const PlannerMap = () => {
         <div className="absolute bottom-3 right-3 flex flex-col gap-2">
           <Button size="icon" variant="secondary" className="rounded-full shadow-lg">
             <Navigation className="w-4 h-4" />
-          </Button>
-          <Button size="icon" variant="secondary" className="rounded-full shadow-lg">
-            <RefreshCw className="w-4 h-4" />
           </Button>
         </div>
       </div>

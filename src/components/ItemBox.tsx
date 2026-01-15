@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Gift, Ticket, Star, AlertTriangle, X, Check, Trash2 } from "lucide-react";
+import { Gift, Ticket, Star, AlertTriangle, Check, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,19 +13,17 @@ interface Item {
   type: 'coupon' | 'gift_voucher' | 'special';
   name: string;
   description: string;
-  quantity: number;
   expiresAt: Date;
   merchantName?: string;
 }
 
-// Mock data for demo
+// Mock data for demo - each item is one slot
 const mockItems: Item[] = [
   {
     id: "1",
     type: "coupon",
     name: "9折優惠券",
     description: "全館商品適用",
-    quantity: 1,
     expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
     merchantName: "肴饌手作坊",
   },
@@ -34,7 +32,6 @@ const mockItems: Item[] = [
     type: "gift_voucher",
     name: "免費甜點兌換",
     description: "消費滿500即可兌換",
-    quantity: 2,
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     merchantName: "水雲山莊",
   },
@@ -43,7 +40,6 @@ const mockItems: Item[] = [
     type: "special",
     name: "VIP體驗券",
     description: "專屬VIP導覽服務",
-    quantity: 1,
     expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     merchantName: "赫蒂法莊園",
   },
@@ -52,7 +48,6 @@ const mockItems: Item[] = [
     type: "coupon",
     name: "買一送一",
     description: "指定飲品適用",
-    quantity: 3,
     expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     merchantName: "阿宗麵線",
   },
@@ -61,7 +56,6 @@ const mockItems: Item[] = [
     type: "gift_voucher",
     name: "住宿升等券",
     description: "免費升等一級房型",
-    quantity: 1,
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     merchantName: "日月潭雲品酒店",
   },
@@ -76,7 +70,8 @@ const ItemBox = () => {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const usedSlots = items.reduce((acc, item) => acc + item.quantity, 0);
+  // Count unique items (each item = 1 slot)
+  const usedSlots = items.length;
 
   const getItemIcon = (type: Item['type']) => {
     switch (type) {
@@ -125,15 +120,8 @@ const ItemBox = () => {
 
   const handleRedeem = () => {
     if (!selectedItem) return;
-    // 核銷邏輯 - 減少數量或移除
-    setItems(prev => prev.map(item => {
-      if (item.id === selectedItem.id) {
-        return item.quantity > 1 
-          ? { ...item, quantity: item.quantity - 1 }
-          : item;
-      }
-      return item;
-    }).filter(item => item.quantity > 0 || item.id !== selectedItem.id));
+    // Remove the item after redeeming
+    setItems(prev => prev.filter(item => item.id !== selectedItem.id));
     setDialogOpen(false);
   };
 
@@ -143,55 +131,32 @@ const ItemBox = () => {
     setDialogOpen(false);
   };
 
-  // 建立網格格子
+  // Render grid - each item takes one slot
   const renderGrid = () => {
     const slots = [];
-    let itemIndex = 0;
-    let itemQuantityUsed = 0;
 
     for (let i = 0; i < TOTAL_SLOTS; i++) {
-      // 找出當前格子應該顯示的道具
-      let currentItem: Item | null = null;
-      let isFirstSlotOfItem = false;
-
-      if (itemIndex < items.length) {
-        const item = items[itemIndex];
-        if (itemQuantityUsed < item.quantity) {
-          currentItem = item;
-          isFirstSlotOfItem = itemQuantityUsed === 0;
-          itemQuantityUsed++;
-          if (itemQuantityUsed >= item.quantity) {
-            itemIndex++;
-            itemQuantityUsed = 0;
-          }
-        }
-      }
+      const currentItem = items[i] || null;
 
       if (currentItem) {
         const expiringSoon = isExpiringSoon(currentItem.expiresAt);
         slots.push(
           <button
             key={i}
-            onClick={() => handleItemClick(currentItem!)}
+            onClick={() => handleItemClick(currentItem)}
             className={`aspect-square rounded-xl border flex items-center justify-center relative transition-all active:scale-95 ${getItemColor(currentItem.type)}`}
           >
             {getItemIcon(currentItem.type)}
-            {/* 過期警告角標 */}
+            {/* Expiry warning badge */}
             {expiringSoon && (
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
                 <AlertTriangle className="w-2.5 h-2.5 text-white" />
               </div>
             )}
-            {/* 如果是第一格且數量>1，顯示數量 */}
-            {isFirstSlotOfItem && currentItem.quantity > 1 && (
-              <div className="absolute bottom-0 right-0 bg-foreground text-background text-[10px] font-bold px-1.5 rounded-tl-lg rounded-br-lg">
-                x{currentItem.quantity}
-              </div>
-            )}
           </button>
         );
       } else {
-        // 空格
+        // Empty slot
         slots.push(
           <div
             key={i}
@@ -244,10 +209,6 @@ const ItemBox = () => {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">說明</span>
                     <span className="text-foreground">{selectedItem.description}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted">數量</span>
-                    <span className="text-foreground">{selectedItem.quantity}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">有效期限</span>
