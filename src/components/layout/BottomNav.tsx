@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Gift, Settings } from "lucide-react";
+import { Home, Dices, Settings } from "lucide-react";
 
 interface NavItem {
   path: string;
@@ -9,7 +9,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: "/home", label: "首頁", icon: Home },
-  { path: "/gacha", label: "扭蛋", icon: Gift },
+  { path: "/gacha", label: "扭蛋", icon: Dices },
   { path: "/settings", label: "設定", icon: Settings },
 ];
 

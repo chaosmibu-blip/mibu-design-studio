@@ -10,13 +10,17 @@ import {
   LogOut, 
   Trash2, 
   ChevronRight,
-  Moon
+  Moon,
+  Map,
+  Trophy
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import mibuPeek from "@/assets/mibu-peek.jpeg";
 
 const SettingsPage = () => {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -27,7 +31,7 @@ const SettingsPage = () => {
         { 
           icon: User, 
           label: "個人資料", 
-          action: () => window.location.href = "/profile",
+          action: () => navigate("/profile"),
           hasArrow: true 
         },
         { 
@@ -35,6 +39,25 @@ const SettingsPage = () => {
           label: "語言設定", 
           value: "繁體中文",
           hasArrow: true 
+        },
+      ],
+    },
+    {
+      title: "探索",
+      items: [
+        { 
+          icon: Map, 
+          label: "全球地圖", 
+          action: () => navigate("/map"),
+          hasArrow: true,
+          badge: "1 已解鎖"
+        },
+        { 
+          icon: Trophy, 
+          label: "成就系統", 
+          action: () => navigate("/achievements"),
+          hasArrow: true,
+          badge: "2/10"
         },
       ],
     },
@@ -97,6 +120,11 @@ const SettingsPage = () => {
                     <item.icon className="w-5 h-5 text-primary" />
                   </div>
                   <span className="flex-1 text-left text-foreground">{item.label}</span>
+                  {item.badge && (
+                    <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
                   {item.value && (
                     <span className="text-sm text-muted">{item.value}</span>
                   )}

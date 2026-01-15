@@ -8,6 +8,7 @@ interface CollectionItem {
   title: string;
   description?: string;
   category: string;
+  checkInCount: number;
 }
 
 interface CategoryData {
@@ -31,16 +32,16 @@ const taiwanCollections: CountyData[] = [
       {
         name: "美食",
         items: [
-          { date: "2025/12/29", title: "楓情卡拉 ok", category: "美食" },
-          { date: "2025/12/29", title: "The Roof 190 星空酒吧", description: "城市高空賞星空，特調美酒伴夜色。適合情侶約會，或與摯友小酌。", category: "美食" },
-          { date: "2025/12/29", title: "牛媽媽軟心宜蘭餅", description: "獨創軟心宜蘭餅，口感綿密細緻。創新滋味，是下午茶或送禮的溫暖心意。", category: "美食" },
-          { date: "2025/12/29", title: "邂逅街冰淇淋·咖椰吐司·甜點咖啡專賣（電話故障，請改以 FB 或 IG 聯繫）", description: "冰淇淋、咖椰吐司與咖啡香，甜蜜交織。適合午后約會，享受悠閒甜點時光。", category: "美食" },
+          { date: "2025/12/29", title: "楓情卡拉 ok", category: "美食", checkInCount: 3 },
+          { date: "2025/12/29", title: "The Roof 190 星空酒吧", description: "城市高空賞星空，特調美酒伴夜色。適合情侶約會，或與摯友小酌。", category: "美食", checkInCount: 12 },
+          { date: "2025/12/29", title: "牛媽媽軟心宜蘭餅", description: "獨創軟心宜蘭餅，口感綿密細緻。創新滋味，是下午茶或送禮的溫暖心意。", category: "美食", checkInCount: 28 },
+          { date: "2025/12/29", title: "邂逅街冰淇淋·咖椰吐司·甜點咖啡專賣", description: "冰淇淋、咖椰吐司與咖啡香，甜蜜交織。適合午后約會，享受悠閒甜點時光。", category: "美食", checkInCount: 45 },
         ],
       },
       {
         name: "遊程體驗",
         items: [
-          { date: "2025/12/28", title: "Healtdeva 赫蒂法莊園", description: "赫蒂法莊園歐風城堡，秒變公主！情侶閨蜜來打卡。", category: "遊程體驗" },
+          { date: "2025/12/28", title: "Healtdeva 赫蒂法莊園", description: "赫蒂法莊園歐風城堡，秒變公主！情侶閨蜜來打卡。", category: "遊程體驗", checkInCount: 52 },
         ],
       },
     ],
@@ -53,7 +54,7 @@ const taiwanCollections: CountyData[] = [
       {
         name: "美食",
         items: [
-          { date: "2025/12/28", title: "鼎泰豐", description: "世界知名小籠包，皮薄餡鮮。", category: "美食" },
+          { date: "2025/12/28", title: "鼎泰豐", description: "世界知名小籠包，皮薄餡鮮。", category: "美食", checkInCount: 8 },
         ],
       },
     ],
@@ -78,7 +79,7 @@ const taiwanCollections: CountyData[] = [
   },
   {
     name: "新竹縣",
-    shortName: "新",
+    shortName: "竹",
     totalLocations: 22,
     categories: [],
   },
@@ -198,6 +199,9 @@ const CollectionPage = () => {
                                 category={item.category}
                                 title={item.title}
                                 description={item.description}
+                                checkInCount={item.checkInCount}
+                                showProgress={true}
+                                onMapClick={() => handleMapClick(item.title)}
                               />
                             ))}
                           </div>
