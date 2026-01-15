@@ -18,8 +18,8 @@ const BottomNav = () => {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-card to-card/95 border-t border-border/50 backdrop-blur-sm">
-      <div className="flex items-center justify-around py-2 pb-safe max-w-md mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-card to-card/95 border-t border-border/50 backdrop-blur-sm pb-safe">
+      <div className="flex items-center justify-around py-2 max-w-md mx-auto px-safe">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path === "/gacha" && location.pathname === "/collection") ||

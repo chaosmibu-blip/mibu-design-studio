@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Gift, Ticket, Star, AlertTriangle, Package, Plus } from "lucide-react";
+import { Gift, Ticket, Star, AlertTriangle, X, Check, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface Item {
   id: string;
@@ -19,7 +26,7 @@ const mockItems: Item[] = [
     name: "9折優惠券",
     description: "全館商品適用",
     quantity: 1,
-    expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
+    expiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
     merchantName: "肴饌手作坊",
   },
   {
@@ -28,7 +35,7 @@ const mockItems: Item[] = [
     name: "免費甜點兌換",
     description: "消費滿500即可兌換",
     quantity: 2,
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     merchantName: "水雲山莊",
   },
   {
@@ -37,7 +44,7 @@ const mockItems: Item[] = [
     name: "VIP體驗券",
     description: "專屬VIP導覽服務",
     quantity: 1,
-    expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 day
+    expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     merchantName: "赫蒂法莊園",
   },
   {
@@ -46,7 +53,7 @@ const mockItems: Item[] = [
     name: "買一送一",
     description: "指定飲品適用",
     quantity: 3,
-    expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
+    expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     merchantName: "阿宗麵線",
   },
   {
@@ -55,35 +62,41 @@ const mockItems: Item[] = [
     name: "住宿升等券",
     description: "免費升等一級房型",
     quantity: 1,
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     merchantName: "日月潭雲品酒店",
   },
 ];
 
+const GRID_COLS = 6;
+const GRID_ROWS = 5;
+const TOTAL_SLOTS = GRID_COLS * GRID_ROWS;
+
 const ItemBox = () => {
-  const [items] = useState<Item[]>(mockItems);
-  const maxSlots = 30;
+  const [items, setItems] = useState<Item[]>(mockItems);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const usedSlots = items.reduce((acc, item) => acc + item.quantity, 0);
 
   const getItemIcon = (type: Item['type']) => {
     switch (type) {
       case 'coupon':
-        return <Ticket className="w-6 h-6" />;
+        return <Ticket className="w-5 h-5" />;
       case 'gift_voucher':
-        return <Gift className="w-6 h-6" />;
+        return <Gift className="w-5 h-5" />;
       case 'special':
-        return <Star className="w-6 h-6" />;
+        return <Star className="w-5 h-5" />;
     }
   };
 
   const getItemColor = (type: Item['type']) => {
     switch (type) {
       case 'coupon':
-        return 'bg-amber-500/20 text-amber-600';
+        return 'bg-amber-500/20 text-amber-600 border-amber-500/30';
       case 'gift_voucher':
-        return 'bg-pink-500/20 text-pink-600';
+        return 'bg-pink-500/20 text-pink-600 border-pink-500/30';
       case 'special':
-        return 'bg-purple-500/20 text-purple-600';
+        return 'bg-purple-500/20 text-purple-600 border-purple-500/30';
     }
   };
 
@@ -97,92 +110,176 @@ const ItemBox = () => {
     return getDaysUntilExpiry(expiresAt) <= 3;
   };
 
-  const formatExpiryText = (expiresAt: Date) => {
-    const days = getDaysUntilExpiry(expiresAt);
-    if (days <= 0) return "已過期";
-    if (days === 1) return "剩餘 1 天";
-    return `剩餘 ${days} 天`;
+  const formatExpiryDate = (expiresAt: Date) => {
+    return expiresAt.toLocaleDateString('zh-TW', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
   };
 
-  const emptySlots = maxSlots - usedSlots;
+  const handleItemClick = (item: Item) => {
+    setSelectedItem(item);
+    setDialogOpen(true);
+  };
+
+  const handleRedeem = () => {
+    if (!selectedItem) return;
+    // 核銷邏輯 - 減少數量或移除
+    setItems(prev => prev.map(item => {
+      if (item.id === selectedItem.id) {
+        return item.quantity > 1 
+          ? { ...item, quantity: item.quantity - 1 }
+          : item;
+      }
+      return item;
+    }).filter(item => item.quantity > 0 || item.id !== selectedItem.id));
+    setDialogOpen(false);
+  };
+
+  const handleDelete = () => {
+    if (!selectedItem) return;
+    setItems(prev => prev.filter(item => item.id !== selectedItem.id));
+    setDialogOpen(false);
+  };
+
+  // 建立網格格子
+  const renderGrid = () => {
+    const slots = [];
+    let itemIndex = 0;
+    let itemQuantityUsed = 0;
+
+    for (let i = 0; i < TOTAL_SLOTS; i++) {
+      // 找出當前格子應該顯示的道具
+      let currentItem: Item | null = null;
+      let isFirstSlotOfItem = false;
+
+      if (itemIndex < items.length) {
+        const item = items[itemIndex];
+        if (itemQuantityUsed < item.quantity) {
+          currentItem = item;
+          isFirstSlotOfItem = itemQuantityUsed === 0;
+          itemQuantityUsed++;
+          if (itemQuantityUsed >= item.quantity) {
+            itemIndex++;
+            itemQuantityUsed = 0;
+          }
+        }
+      }
+
+      if (currentItem) {
+        const expiringSoon = isExpiringSoon(currentItem.expiresAt);
+        slots.push(
+          <button
+            key={i}
+            onClick={() => handleItemClick(currentItem!)}
+            className={`aspect-square rounded-xl border flex items-center justify-center relative transition-all active:scale-95 ${getItemColor(currentItem.type)}`}
+          >
+            {getItemIcon(currentItem.type)}
+            {/* 過期警告角標 */}
+            {expiringSoon && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-2.5 h-2.5 text-white" />
+              </div>
+            )}
+            {/* 如果是第一格且數量>1，顯示數量 */}
+            {isFirstSlotOfItem && currentItem.quantity > 1 && (
+              <div className="absolute bottom-0 right-0 bg-foreground text-background text-[10px] font-bold px-1.5 rounded-tl-lg rounded-br-lg">
+                x{currentItem.quantity}
+              </div>
+            )}
+          </button>
+        );
+      } else {
+        // 空格
+        slots.push(
+          <div
+            key={i}
+            className="aspect-square rounded-xl border border-dashed border-border/50 bg-secondary/30"
+          />
+        );
+      }
+    }
+
+    return slots;
+  };
 
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Capacity indicator */}
-      <div className="bg-card rounded-2xl p-4 border border-border">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <Package className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium text-foreground">道具箱容量</span>
-          </div>
-          <span className="text-sm text-muted">
-            <span className="text-primary font-bold">{usedSlots}</span> / {maxSlots}
-          </span>
-        </div>
-        <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-primary rounded-full transition-all duration-300"
-            style={{ width: `${(usedSlots / maxSlots) * 100}%` }}
-          />
-        </div>
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted">道具箱容量</span>
+        <span className="text-foreground">
+          <span className="text-primary font-bold">{usedSlots}</span> / {TOTAL_SLOTS}
+        </span>
       </div>
 
-      {/* Items grid */}
-      <div className="grid grid-cols-2 gap-3">
-        {items.map((item) => {
-          const expiringSoon = isExpiringSoon(item.expiresAt);
-          return (
-            <div
-              key={item.id}
-              className={`bg-card rounded-2xl p-4 border transition-all hover:shadow-md ${
-                expiringSoon ? 'border-destructive/50 bg-destructive/5' : 'border-border'
-              }`}
-            >
-              {/* Icon and type */}
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${getItemColor(item.type)}`}>
-                {getItemIcon(item.type)}
-              </div>
-              
-              {/* Name and quantity */}
-              <h3 className="font-medium text-foreground text-sm mb-1 line-clamp-1">
-                {item.name}
-              </h3>
-              <p className="text-xs text-muted mb-2 line-clamp-1">
-                {item.merchantName}
-              </p>
-              
-              {/* Quantity badge */}
-              {item.quantity > 1 && (
-                <span className="inline-block px-2 py-0.5 bg-secondary rounded-full text-xs text-foreground mb-2">
-                  x{item.quantity}
-                </span>
-              )}
-              
-              {/* Expiry warning */}
-              <div className={`flex items-center gap-1 text-xs ${
-                expiringSoon ? 'text-destructive font-medium' : 'text-muted'
-              }`}>
-                {expiringSoon && <AlertTriangle className="w-3 h-3" />}
-                <span>{formatExpiryText(item.expiresAt)}</span>
-              </div>
-            </div>
-          );
-        })}
-        
-        {/* Empty slots indicator */}
-        {emptySlots > 0 && (
-          <div className="bg-card/50 rounded-2xl p-4 border border-dashed border-border flex flex-col items-center justify-center text-muted min-h-[140px]">
-            <Plus className="w-8 h-8 mb-2 opacity-50" />
-            <span className="text-xs">空位 x{emptySlots}</span>
-          </div>
-        )}
+      {/* Game-style grid */}
+      <div 
+        className="grid gap-2 bg-card rounded-2xl p-3 border border-border"
+        style={{ gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)` }}
+      >
+        {renderGrid()}
       </div>
 
-      {/* Expand capacity button */}
-      <button className="w-full py-3 bg-secondary hover:bg-secondary/80 rounded-xl text-sm text-foreground flex items-center justify-center gap-2 transition-colors">
-        <Plus className="w-4 h-4" />
-        擴充道具箱容量
-      </button>
+      {/* Item detail dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-sm mx-4 rounded-2xl">
+          {selectedItem && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-3">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getItemColor(selectedItem.type)}`}>
+                    {getItemIcon(selectedItem.type)}
+                  </div>
+                  <div>
+                    <DialogTitle className="text-left">{selectedItem.name}</DialogTitle>
+                    <p className="text-sm text-muted">{selectedItem.merchantName}</p>
+                  </div>
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted">說明</span>
+                    <span className="text-foreground">{selectedItem.description}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted">數量</span>
+                    <span className="text-foreground">{selectedItem.quantity}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted">有效期限</span>
+                    <span className={isExpiringSoon(selectedItem.expiresAt) ? "text-red-500 font-medium" : "text-foreground"}>
+                      {formatExpiryDate(selectedItem.expiresAt)}
+                      {isExpiringSoon(selectedItem.expiresAt) && ` (剩${getDaysUntilExpiry(selectedItem.expiresAt)}天)`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    onClick={handleRedeem}
+                    className="flex-1 bg-primary hover:bg-primary/90"
+                  >
+                    <Check className="w-4 h-4 mr-2" />
+                    核銷使用
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    variant="outline"
+                    className="border-red-300 text-red-500 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
