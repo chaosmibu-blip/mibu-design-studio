@@ -8,8 +8,8 @@ interface PageLayoutProps {
 
 const PageLayout = ({ children, showNav = true, className = "" }: PageLayoutProps) => {
   return (
-    <div className="min-h-screen bg-background">
-      <main className={`${showNav ? "pb-20" : ""} ${className}`}>
+    <div className="min-h-screen-safe bg-background pt-safe">
+      <main className={`${showNav ? "pb-[calc(5rem+env(safe-area-inset-bottom))]" : "pb-safe"} ${className}`}>
         {children}
       </main>
       {showNav && <BottomNav />}

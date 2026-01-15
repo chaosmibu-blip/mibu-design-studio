@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import TripCard from "@/components/TripCard";
 import ItemBox from "@/components/ItemBox";
+import CollectionContent from "@/components/CollectionContent";
 import mibuLogo from "@/assets/mibu-logo.jpeg";
 
 // 國家 -> 縣市結構
@@ -28,7 +28,6 @@ const sampleResults = [
 ];
 
 const GachaPage = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"gacha" | "collection" | "items">("gacha");
   const [selectedCountry, setSelectedCountry] = useState("台灣");
   const [selectedCounty, setSelectedCounty] = useState("宜蘭縣");
@@ -68,10 +67,7 @@ const GachaPage = () => {
               )}
             </button>
             <button
-              onClick={() => {
-                setActiveTab("collection");
-                navigate("/collection");
-              }}
+              onClick={() => setActiveTab("collection")}
               className={`flex-1 py-4 text-sm font-medium transition-all relative ${
                 activeTab === "collection"
                   ? "text-primary"
@@ -102,6 +98,9 @@ const GachaPage = () => {
         <div className="flex-1 px-4 pt-6 pb-4 overflow-y-auto">
           {/* Items tab */}
           {activeTab === "items" && <ItemBox />}
+          
+          {/* Collection tab */}
+          {activeTab === "collection" && <CollectionContent />}
           
           {/* Gacha tab */}
           {activeTab === "gacha" && (
