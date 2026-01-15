@@ -7,49 +7,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { taiwanCollections } from "@/components/CollectionContent";
-
-interface ItineraryItem {
-  id: string;
-  title: string;
-  category: string;
-  startTime: string;
-  duration: string;
-  notes?: string;
-}
-
-interface DaySchedule {
-  date: Date;
-  items: ItineraryItem[];
-}
-
-// Mock data
-const mockSchedules: DaySchedule[] = [
-  {
-    date: new Date(2024, 2, 15),
-    items: [
-      { id: "1", title: "九份老街", category: "遊程體驗", startTime: "09:00", duration: "3h", notes: "記得帶傘" },
-      { id: "2", title: "阿妹茶樓", category: "美食", startTime: "12:00", duration: "1.5h" },
-      { id: "3", title: "十分瀑布", category: "遊程體驗", startTime: "14:30", duration: "2h" },
-      { id: "4", title: "十分老街放天燈", category: "遊程體驗", startTime: "17:00", duration: "1.5h", notes: "寫下願望" },
-    ],
-  },
-  {
-    date: new Date(2024, 2, 16),
-    items: [
-      { id: "5", title: "野柳地質公園", category: "遊程體驗", startTime: "09:30", duration: "2h" },
-      { id: "6", title: "金山老街", category: "美食", startTime: "12:00", duration: "2h", notes: "必吃鴨肉" },
-      { id: "7", title: "朱銘美術館", category: "遊程體驗", startTime: "15:00", duration: "2.5h" },
-    ],
-  },
-  {
-    date: new Date(2024, 2, 17),
-    items: [
-      { id: "8", title: "淡水老街", category: "遊程體驗", startTime: "10:00", duration: "3h" },
-      { id: "9", title: "漁人碼頭夕陽", category: "遊程體驗", startTime: "17:00", duration: "1.5h" },
-    ],
-  },
-];
+import { useCollection } from "@/hooks/useCollection";
+import { usePurchase } from "@/hooks/usePurchase";
+import type { ItineraryItem, DaySchedule } from "@/types";
 
 const getCategoryIcon = (category: string) => {
   switch (category) {
@@ -77,26 +37,32 @@ const getCategoryColor = (category: string) => {
   }
 };
 
-// 從圖鑑收集的所有行程
-const getAllCollectionItems = () => {
-  const items: { title: string; category: string; county: string; description?: string }[] = [];
-  taiwanCollections.forEach(county => {
-    county.categories.forEach(category => {
-      category.items.forEach(item => {
-        items.push({
-          title: item.title,
-          category: item.category,
-          county: county.name,
-          description: item.description,
-        });
-      });
-    });
-  });
-  return items;
-};
+const ITINERARY_STORAGE_KEY = "mibu_itinerary";
 
 const Itinerary = () => {
-  const [schedules, setSchedules] = useState<DaySchedule[]>(mockSchedules);
+  const { generateScheduleDates, days } = usePurchase();
+  const { items: collectionItems } = useCollection();
+  
+  // 從 localStorage 載入或根據購買天數產生空行程表
+  const [schedules, setSchedules] = useState<DaySchedule[]>(() => {
+    const stored = localStorage.getItem(ITINERARY_STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        // 將日期字串轉回 Date 物件
+        return parsed.map((s: { date: string; items: ItineraryItem[] }) => ({
+          ...s,
+          date: new Date(s.date),
+        }));
+      } catch {
+        // 如果解析失敗，產生新的行程表
+      }
+    }
+    // 根據購買天數產生空行程表
+    const dates = generateScheduleDates();
+    return dates.map(date => ({ date, items: [] }));
+  });
+
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -104,10 +70,42 @@ const Itinerary = () => {
   const [selectedTime, setSelectedTime] = useState("10:00");
   const [selectedDuration, setSelectedDuration] = useState("2h");
 
-  const currentSchedule = schedules[currentDayIndex];
-  const collectionItems = getAllCollectionItems();
+  // 確保行程表天數與購買天數一致
+  const ensureScheduleDays = () => {
+    const dates = generateScheduleDates();
+    if (dates.length === 0) return schedules;
+    
+    if (schedules.length !== dates.length) {
+      const newSchedules = dates.map((date, index) => {
+        // 保留現有的行程資料
+        if (index < schedules.length) {
+          return { ...schedules[index], date };
+        }
+        return { date, items: [] };
+      });
+      return newSchedules;
+    }
+    return schedules;
+  };
 
-  const filteredItems = collectionItems.filter(item => 
+  const currentSchedules = ensureScheduleDays();
+  const currentSchedule = currentSchedules[currentDayIndex] || { date: new Date(), items: [] };
+
+  // 儲存到 localStorage
+  const saveSchedules = (newSchedules: DaySchedule[]) => {
+    setSchedules(newSchedules);
+    localStorage.setItem(ITINERARY_STORAGE_KEY, JSON.stringify(newSchedules));
+  };
+
+  // 轉換收藏項目為選擇清單格式
+  const selectableItems = collectionItems.map(item => ({
+    title: item.title,
+    category: item.category,
+    county: item.county,
+    description: item.description,
+  }));
+
+  const filteredItems = selectableItems.filter(item => 
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.county.includes(searchQuery) ||
     item.category.includes(searchQuery)
@@ -129,7 +127,7 @@ const Itinerary = () => {
   };
 
   const goToNextDay = () => {
-    if (currentDayIndex < schedules.length - 1) {
+    if (currentDayIndex < currentSchedules.length - 1) {
       setCurrentDayIndex(currentDayIndex + 1);
     }
   };
@@ -155,7 +153,7 @@ const Itinerary = () => {
       duration: selectedDuration,
     };
 
-    setSchedules(prev => prev.map((schedule, index) => {
+    const newSchedules = currentSchedules.map((schedule, index) => {
       if (index === currentDayIndex) {
         return {
           ...schedule,
@@ -163,11 +161,36 @@ const Itinerary = () => {
         };
       }
       return schedule;
-    }));
+    });
 
+    saveSchedules(newSchedules);
     setSheetOpen(false);
     setSelectedItem(null);
   };
+
+  const handleDeleteItem = (itemId: string) => {
+    const newSchedules = currentSchedules.map((schedule, index) => {
+      if (index === currentDayIndex) {
+        return {
+          ...schedule,
+          items: schedule.items.filter(item => item.id !== itemId),
+        };
+      }
+      return schedule;
+    });
+    saveSchedules(newSchedules);
+  };
+
+  // 如果沒有行程表天數（未購買）
+  if (currentSchedules.length === 0) {
+    return (
+      <div className="text-center py-12 animate-fade-in">
+        <div className="text-4xl mb-4">📅</div>
+        <p className="text-muted">尚未購買旅程策劃服務</p>
+        <p className="text-sm text-muted mt-1">購買後即可開始規劃行程</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -188,7 +211,7 @@ const Itinerary = () => {
             <div className="flex items-center gap-2 justify-center mb-1">
               <Calendar className="w-4 h-4 text-primary" />
               <span className="font-bold text-foreground">
-                Day {currentDayIndex + 1}
+                Day {currentDayIndex + 1} / {days}
               </span>
             </div>
             <p className="text-sm text-muted">{formatDate(currentSchedule.date)}</p>
@@ -198,7 +221,7 @@ const Itinerary = () => {
             size="icon"
             variant="ghost"
             onClick={goToNextDay}
-            disabled={currentDayIndex === schedules.length - 1}
+            disabled={currentDayIndex === currentSchedules.length - 1}
             className="rounded-full"
           >
             <ChevronRight className="w-5 h-5" />
@@ -206,8 +229,8 @@ const Itinerary = () => {
         </div>
 
         {/* Day pills */}
-        <div className="flex justify-center gap-2 mt-4">
-          {schedules.map((_, index) => (
+        <div className="flex justify-center gap-2 mt-4 flex-wrap">
+          {currentSchedules.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentDayIndex(index)}
@@ -222,6 +245,15 @@ const Itinerary = () => {
           ))}
         </div>
       </div>
+
+      {/* Empty state for day */}
+      {currentSchedule.items.length === 0 && (
+        <div className="text-center py-8">
+          <div className="text-3xl mb-3">📝</div>
+          <p className="text-muted">這天還沒有行程</p>
+          <p className="text-sm text-muted mt-1">從圖鑑新增地點到行程表</p>
+        </div>
+      )}
 
       {/* Timeline */}
       <div className="space-y-0">
@@ -262,7 +294,12 @@ const Itinerary = () => {
                     <Button size="icon" variant="ghost" className="h-8 w-8">
                       <Edit2 className="w-4 h-4 text-muted" />
                     </Button>
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      className="h-8 w-8"
+                      onClick={() => handleDeleteItem(item.id)}
+                    >
                       <Trash2 className="w-4 h-4 text-muted" />
                     </Button>
                   </div>
@@ -296,7 +333,7 @@ const Itinerary = () => {
         onClick={handleAddFromCollection}
       >
         <Plus className="w-4 h-4 mr-2" />
-        新增行程
+        從圖鑑新增行程
       </Button>
 
       {/* Add from collection sheet */}
