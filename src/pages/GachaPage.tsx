@@ -4,7 +4,8 @@ import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import TripCard from "@/components/TripCard";
-import mibuHoodie from "@/assets/mibu-hoodie.jpeg";
+import ItemBox from "@/components/ItemBox";
+import mibuLogo from "@/assets/mibu-logo.jpeg";
 
 // 國家 -> 縣市結構
 const countries: Record<string, string[]> = {
@@ -28,7 +29,7 @@ const sampleResults = [
 
 const GachaPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"gacha" | "collection">("gacha");
+  const [activeTab, setActiveTab] = useState<"gacha" | "collection" | "items">("gacha");
   const [selectedCountry, setSelectedCountry] = useState("台灣");
   const [selectedCounty, setSelectedCounty] = useState("宜蘭縣");
   const [gachaCount, setGachaCount] = useState([5]);
@@ -55,7 +56,7 @@ const GachaPage = () => {
                 setActiveTab("gacha");
                 setShowResult(false);
               }}
-              className={`flex-1 py-4 text-base font-medium transition-all relative ${
+              className={`flex-1 py-4 text-sm font-medium transition-all relative ${
                 activeTab === "gacha"
                   ? "text-primary"
                   : "text-muted"
@@ -63,7 +64,7 @@ const GachaPage = () => {
             >
               扭蛋
               {activeTab === "gacha" && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-primary rounded-full" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
               )}
             </button>
             <button
@@ -71,7 +72,7 @@ const GachaPage = () => {
                 setActiveTab("collection");
                 navigate("/collection");
               }}
-              className={`flex-1 py-4 text-base font-medium transition-all relative ${
+              className={`flex-1 py-4 text-sm font-medium transition-all relative ${
                 activeTab === "collection"
                   ? "text-primary"
                   : "text-muted"
@@ -79,157 +80,178 @@ const GachaPage = () => {
             >
               圖鑑
               {activeTab === "collection" && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-primary rounded-full" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("items")}
+              className={`flex-1 py-4 text-sm font-medium transition-all relative ${
+                activeTab === "items"
+                  ? "text-primary"
+                  : "text-muted"
+              }`}
+            >
+              道具箱
+              {activeTab === "items" && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
               )}
             </button>
           </div>
         </div>
 
-        <div className="flex-1 px-4 pt-6 pb-4">
-          {!showResult ? (
-            <div className="space-y-6 animate-fade-in">
-              {/* Country selector */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">選擇國家</label>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                    className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border btn-press"
-                  >
-                    <span className="text-foreground">{selectedCountry}</span>
-                    <span className={`text-muted transition-transform ${showCountryDropdown ? "rotate-180" : ""}`}>▼</span>
-                  </button>
-                  {showCountryDropdown && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-lg z-10 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
-                      {Object.keys(countries).map((country) => (
-                        <button
-                          key={country}
-                          onClick={() => {
-                            setSelectedCountry(country);
-                            setSelectedCounty(countries[country][0]);
-                            setShowCountryDropdown(false);
-                          }}
-                          className={`w-full p-4 text-left hover:bg-secondary transition-colors ${
-                            selectedCountry === country ? "bg-secondary text-primary font-medium" : "text-foreground"
-                          }`}
-                        >
-                          {country}
-                        </button>
-                      ))}
+        <div className="flex-1 px-4 pt-6 pb-4 overflow-y-auto">
+          {/* Items tab */}
+          {activeTab === "items" && <ItemBox />}
+          
+          {/* Gacha tab */}
+          {activeTab === "gacha" && (
+            <>
+              {!showResult ? (
+                <div className="space-y-6 animate-fade-in">
+                  {/* Country selector */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">選擇國家</label>
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                        className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border btn-press"
+                      >
+                        <span className="text-foreground">{selectedCountry}</span>
+                        <span className={`text-muted transition-transform ${showCountryDropdown ? "rotate-180" : ""}`}>▼</span>
+                      </button>
+                      {showCountryDropdown && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-lg z-10 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
+                          {Object.keys(countries).map((country) => (
+                            <button
+                              key={country}
+                              onClick={() => {
+                                setSelectedCountry(country);
+                                setSelectedCounty(countries[country][0]);
+                                setShowCountryDropdown(false);
+                              }}
+                              className={`w-full p-4 text-left hover:bg-secondary transition-colors ${
+                                selectedCountry === country ? "bg-secondary text-primary font-medium" : "text-foreground"
+                              }`}
+                            >
+                              {country}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
 
-              {/* County selector */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">選擇縣市</label>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowCountyDropdown(!showCountyDropdown)}
-                    className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border btn-press"
-                  >
-                    <span className="text-foreground">{selectedCounty}</span>
-                    <span className={`text-muted transition-transform ${showCountyDropdown ? "rotate-180" : ""}`}>▼</span>
-                  </button>
-                  {showCountyDropdown && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-lg z-10 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
-                      {countries[selectedCountry]?.map((county) => (
-                        <button
-                          key={county}
-                          onClick={() => {
-                            setSelectedCounty(county);
-                            setShowCountyDropdown(false);
-                          }}
-                          className={`w-full p-4 text-left hover:bg-secondary transition-colors ${
-                            selectedCounty === county ? "bg-secondary text-primary font-medium" : "text-foreground"
-                          }`}
-                        >
-                          {county}
-                        </button>
-                      ))}
+                  {/* County selector */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">選擇縣市</label>
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowCountyDropdown(!showCountyDropdown)}
+                        className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border btn-press"
+                      >
+                        <span className="text-foreground">{selectedCounty}</span>
+                        <span className={`text-muted transition-transform ${showCountyDropdown ? "rotate-180" : ""}`}>▼</span>
+                      </button>
+                      {showCountyDropdown && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-lg z-10 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
+                          {countries[selectedCountry]?.map((county) => (
+                            <button
+                              key={county}
+                              onClick={() => {
+                                setSelectedCounty(county);
+                                setShowCountyDropdown(false);
+                              }}
+                              className={`w-full p-4 text-left hover:bg-secondary transition-colors ${
+                                selectedCounty === county ? "bg-secondary text-primary font-medium" : "text-foreground"
+                              }`}
+                            >
+                              {county}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
+
+                  {/* Gacha count slider */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-foreground">扭蛋次數</label>
+                      <span className="text-lg font-bold text-primary">{gachaCount[0]} 次</span>
+                    </div>
+                    <Slider
+                      value={gachaCount}
+                      onValueChange={setGachaCount}
+                      min={5}
+                      max={12}
+                      step={1}
+                      className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.relative]:bg-secondary [&_[data-orientation=horizontal]>.bg-primary]:bg-primary"
+                    />
+                    <div className="flex justify-between text-xs text-muted">
+                      <span>5</span>
+                      <span>12</span>
+                    </div>
+                  </div>
+
+                  {/* Gacha button */}
+                  <Button
+                    onClick={handleGacha}
+                    className="w-full h-16 text-lg font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-press"
+                  >
+                    開始扭蛋！
+                  </Button>
                 </div>
-              </div>
+              ) : (
+                <div className="animate-fade-in">
+                  {/* Result header */}
+                  <div className="text-center mb-6">
+                    <img
+                      src={mibuLogo}
+                      alt="Mibu"
+                      className="w-12 h-12 mx-auto mb-2 object-contain rounded-lg"
+                    />
+                    <span className="text-sm font-bold text-foreground tracking-widest">MIBU</span>
+                    <h2 className="text-2xl font-bold text-foreground mt-2">{selectedCounty}</h2>
+                    <p className="text-sm text-muted">
+                      正在探索 <span className="text-primary">{selectedCountry}</span>
+                    </p>
+                  </div>
 
-              {/* Gacha count slider */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-foreground">扭蛋次數</label>
-                  <span className="text-lg font-bold text-primary">{gachaCount[0]} 次</span>
+                  {/* Main area map link */}
+                  <div className="mb-4">
+                    <button
+                      onClick={() => handleMapClick(`${selectedCountry}${selectedCounty}`)}
+                      className="w-full py-3 bg-card rounded-xl text-sm text-primary flex items-center justify-center gap-2 border border-border"
+                    >
+                      <span>📍</span>
+                      在 Google 地圖中查看
+                    </button>
+                  </div>
+
+                  {/* Trip cards */}
+                  <div className="space-y-4 mb-6">
+                    {sampleResults.slice(0, gachaCount[0]).map((result, index) => (
+                      <TripCard
+                        key={index}
+                        duration={result.duration}
+                        category={result.category}
+                        title={result.title}
+                        description={result.description}
+                        onMapClick={() => handleMapClick(result.title)}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Re-gacha button */}
+                  <Button
+                    onClick={() => setShowResult(false)}
+                    className="w-full h-14 text-base font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-press"
+                  >
+                    重新扭蛋 🔄
+                  </Button>
                 </div>
-                <Slider
-                  value={gachaCount}
-                  onValueChange={setGachaCount}
-                  min={5}
-                  max={12}
-                  step={1}
-                  className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.relative]:bg-secondary [&_[data-orientation=horizontal]>.bg-primary]:bg-primary"
-                />
-                <div className="flex justify-between text-xs text-muted">
-                  <span>5</span>
-                  <span>12</span>
-                </div>
-              </div>
-
-              {/* Gacha button */}
-              <Button
-                onClick={handleGacha}
-                className="w-full h-16 text-lg font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-press"
-              >
-                開始扭蛋！
-              </Button>
-            </div>
-          ) : (
-            <div className="animate-fade-in">
-              {/* Result header */}
-              <div className="text-center mb-6">
-                <img
-                  src={mibuHoodie}
-                  alt="Mibu"
-                  className="w-12 h-12 mx-auto mb-2 object-contain"
-                />
-                <span className="text-sm font-bold text-foreground tracking-widest">MIBU</span>
-                <h2 className="text-2xl font-bold text-foreground mt-2">{selectedCounty}</h2>
-                <p className="text-sm text-muted">
-                  正在探索 <span className="text-primary">{selectedCountry}</span>
-                </p>
-              </div>
-
-              {/* Main area map link */}
-              <div className="mb-4">
-                <button
-                  onClick={() => handleMapClick(`${selectedCountry}${selectedCounty}`)}
-                  className="w-full py-3 bg-card rounded-xl text-sm text-primary flex items-center justify-center gap-2 border border-border"
-                >
-                  <span>📍</span>
-                  在 Google 地圖中查看
-                </button>
-              </div>
-
-              {/* Trip cards */}
-              <div className="space-y-4 mb-6">
-                {sampleResults.slice(0, gachaCount[0]).map((result, index) => (
-                  <TripCard
-                    key={index}
-                    duration={result.duration}
-                    category={result.category}
-                    title={result.title}
-                    description={result.description}
-                    onMapClick={() => handleMapClick(result.title)}
-                  />
-                ))}
-              </div>
-
-              {/* Re-gacha button */}
-              <Button
-                onClick={() => setShowResult(false)}
-                className="w-full h-14 text-base font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-press"
-              >
-                重新扭蛋 🔄
-              </Button>
-            </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Dices, Settings } from "lucide-react";
+import { Home, Dices, Plane, Settings } from "lucide-react";
 
 interface NavItem {
   path: string;
@@ -9,7 +9,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: "/home", label: "首頁", icon: Home },
-  { path: "/gacha", label: "扭蛋", icon: Dices },
+  { path: "/gacha", label: "行程扭蛋", icon: Dices },
+  { path: "/planner", label: "旅程策劃", icon: Plane },
   { path: "/settings", label: "設定", icon: Settings },
 ];
 
@@ -21,7 +22,8 @@ const BottomNav = () => {
       <div className="flex items-center justify-around py-2 pb-safe max-w-md mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || 
-            (item.path === "/gacha" && location.pathname === "/collection");
+            (item.path === "/gacha" && location.pathname === "/collection") ||
+            (item.path === "/planner" && location.pathname.startsWith("/planner"));
           const Icon = item.icon;
 
           return (
