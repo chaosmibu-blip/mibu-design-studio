@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Map, MessageCircle, ChevronDown, Check, Calendar, Plus } from "lucide-react";
+import { Map, MessageCircle, ChevronDown, Check, Calendar } from "lucide-react";
 import PlannerMap from "@/components/PlannerMap";
 import ChatRoom from "@/components/ChatRoom";
 import Itinerary from "@/components/Itinerary";
@@ -45,12 +45,10 @@ const PlannerPage = () => {
     setDays, 
     setStartDate, 
     confirmPurchase, 
-    calculatePrice,
-    resetPurchase
+    calculatePrice
   } = usePurchase();
   const [activeTab, setActiveTab] = useState<"map" | "chat">("map");
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [showSelection, setShowSelection] = useState(false);
   
   // Location selection state
   const [selectedCountry, setSelectedCountry] = useState<string>("");
@@ -65,29 +63,11 @@ const PlannerPage = () => {
   const availableCities = locationData.countries.find(c => c.name === selectedCountry)?.cities || [];
   const availableDistricts = availableCities.find(c => c.name === selectedCity)?.districts || [];
 
-  // Determine if we should show selection flow
-  const shouldShowSelection = !isPurchased || showSelection;
-
   const handleConfirmPurchase = () => {
     setDays(selectedDays);
     setStartDate(selectedStartDate);
     confirmPurchase();
     setSheetOpen(false);
-    setShowSelection(false);
-  };
-
-  const resetSelection = () => {
-    setSelectedCountry("");
-    setSelectedCity("");
-    setSelectedDistrict("");
-    setSelectedDays(3);
-    setSelectedStartDate(new Date().toISOString().split('T')[0]);
-  };
-
-  const handleNewTrip = () => {
-    resetPurchase();
-    resetSelection();
-    setShowSelection(true);
   };
 
   return (
@@ -126,24 +106,13 @@ const PlannerPage = () => {
                   </SheetTitle>
                 </SheetHeader>
 
-                {isPurchased && !showSelection ? (
+                {isPurchased ? (
                   // Show itinerary if purchased
                   <div className="overflow-y-auto h-[calc(85vh-80px)] -mx-6 px-6">
                     <Itinerary />
-                    {/* Button to create new trip */}
-                    <div className="mt-6 pb-6">
-                      <Button
-                        onClick={handleNewTrip}
-                        variant="outline"
-                        className="w-full h-12 rounded-xl border-dashed border-2"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        規劃新行程
-                      </Button>
-                    </div>
                   </div>
                 ) : (
-                  // Show purchase flow if not purchased or creating new trip
+                  // Show purchase flow if not purchased
                   <div className="space-y-5 overflow-y-auto h-[calc(85vh-80px)]">
                     {/* Country selection */}
                     <div className="space-y-2">
