@@ -2,7 +2,8 @@ import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Lock, Check, Globe } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Lock, Check, Globe, ArrowLeft, ChevronRight } from "lucide-react";
 
 interface CountryStatus {
   code: string;
@@ -62,14 +63,24 @@ const MapPage = () => {
   };
 
   return (
-    <PageLayout>
+    <PageLayout showNav={false}>
       <div className="px-4 pt-6 pb-4 space-y-6">
-        {/* Header */}
+        {/* Header with back button */}
+        <div className="flex items-center gap-4 mb-2">
+          <button
+            onClick={() => window.history.back()}
+            className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center shadow-sm btn-press"
+          >
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <h1 className="text-xl font-bold text-foreground">全球探索地圖</h1>
+        </div>
+
+        {/* Stats header */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center">
             <Globe className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">全球探索地圖</h1>
           <p className="text-sm text-muted">
             支持我們解鎖更多國家的景點資料
           </p>
@@ -133,11 +144,20 @@ const MapPage = () => {
                   
                   {/* Funding progress */}
                   {country.status === "funding" && (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       <Progress value={country.fundingProgress} className="h-2" />
-                      <p className="text-xs text-muted">
-                        已募集 NT${country.currentAmount?.toLocaleString()} / NT${country.targetAmount?.toLocaleString()}
-                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted">
+                          已募集 NT${country.currentAmount?.toLocaleString()} / NT${country.targetAmount?.toLocaleString()}
+                        </p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs rounded-full border-amber-500 text-amber-600 hover:bg-amber-50"
+                        >
+                          支持解鎖 <ChevronRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
                     </div>
                   )}
 

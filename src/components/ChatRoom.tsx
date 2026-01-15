@@ -104,7 +104,7 @@ const ChatRoom = () => {
   if (activeChat === null) {
     // Contact list view - 全屏列表
     return (
-      <div className="flex flex-col h-[calc(100dvh-env(safe-area-inset-bottom)-180px)]">
+      <div className="flex flex-col h-[calc(100dvh-env(safe-area-inset-bottom)-5rem-48px)]">
         <h2 className="text-xl font-bold text-foreground mb-4">聊天室</h2>
         <div className="flex-1 overflow-y-auto space-y-2">
           {mockContacts.map((contact) => (
@@ -150,7 +150,7 @@ const ChatRoom = () => {
   const currentContact = mockContacts.find(c => c.id === activeChat);
   
   return (
-    <div className="flex flex-col h-[calc(100dvh-env(safe-area-inset-bottom)-180px)] -mx-4 -mt-6">
+    <div className="flex flex-col h-[calc(100dvh-env(safe-area-inset-bottom)-5rem-48px)] -mx-4 -mt-6">
       {/* Chat header - 固定頂部 */}
       <div className="flex items-center gap-3 px-4 py-3 bg-card border-b border-border">
         <button 

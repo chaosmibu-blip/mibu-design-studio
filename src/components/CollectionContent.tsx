@@ -29,7 +29,6 @@ const CollectionContent = () => {
       {/* Empty state */}
       {collections.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-4xl mb-4">🎰</div>
           <p className="text-muted">還沒有收藏任何地點</p>
           <p className="text-sm text-muted mt-1">去扭蛋探索新地點吧！</p>
         </div>

@@ -1,7 +1,7 @@
 import PageLayout from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Map, Utensils, Camera, Star, Users, Calendar, Sparkles } from "lucide-react";
+import { Trophy, Map, Utensils, Camera, Star, Users, Calendar, Sparkles, ArrowLeft } from "lucide-react";
 
 interface Achievement {
   id: string;
@@ -144,14 +144,24 @@ const AchievementsPage = () => {
   }, {} as Record<string, Achievement[]>);
 
   return (
-    <PageLayout>
+    <PageLayout showNav={false}>
       <div className="px-4 pt-6 pb-4 space-y-6">
-        {/* Header */}
+        {/* Header with back button */}
+        <div className="flex items-center gap-4 mb-2">
+          <button
+            onClick={() => window.history.back()}
+            className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center shadow-sm btn-press"
+          >
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <h1 className="text-xl font-bold text-foreground">我的成就</h1>
+        </div>
+
+        {/* Stats header */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 mx-auto bg-yellow-500/20 rounded-full flex items-center justify-center">
             <Trophy className="w-8 h-8 text-yellow-500" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">我的成就</h1>
           <p className="text-sm text-muted">
             已解鎖 {unlockedCount} / {totalCount} 個成就
           </p>
