@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import mibuHoodie from "@/assets/mibu-hoodie.jpeg";
+import mibuLogo from "@/assets/mibu-logo.jpeg";
 
 const LoginPage = () => {
   return (
@@ -8,9 +8,9 @@ const LoginPage = () => {
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <img
-            src={mibuHoodie}
+            src={mibuLogo}
             alt="Mibu Logo"
-            className="w-12 h-12 object-contain"
+            className="w-12 h-12 object-contain rounded-lg"
           />
           <span className="text-xl font-bold text-foreground tracking-widest">MIBU</span>
         </div>

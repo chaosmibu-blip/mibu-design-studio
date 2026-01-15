@@ -13,6 +13,7 @@ import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import MapPage from "./pages/MapPage";
 import AchievementsPage from "./pages/AchievementsPage";
+import PlannerPage from "./pages/PlannerPage";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/home" element={<HomePage />} />
           <Route path="/gacha" element={<GachaPage />} />
           <Route path="/collection" element={<CollectionPage />} />
+          <Route path="/planner" element={<PlannerPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/map" element={<MapPage />} />
