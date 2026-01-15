@@ -1,113 +1,222 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronRight, MapPin } from "lucide-react";
-import mibuCollection2 from "@/assets/mibu-collection-2.png";
+import TripCard from "@/components/TripCard";
 
-const collections = [
+interface CollectionItem {
+  date: string;
+  title: string;
+  description?: string;
+  category: string;
+}
+
+interface CategoryData {
+  name: string;
+  items: CollectionItem[];
+}
+
+interface CountyData {
+  name: string;
+  shortName: string;
+  totalLocations: number;
+  categories: CategoryData[];
+}
+
+const taiwanCollections: CountyData[] = [
   {
-    country: "日本",
-    cities: [
-      { name: "東京", collected: 8, total: 15, icon: "🗼" },
-      { name: "大阪", collected: 5, total: 12, icon: "🏯" },
-      { name: "京都", collected: 3, total: 10, icon: "⛩️" },
-      { name: "北海道", collected: 2, total: 8, icon: "❄️" },
+    name: "宜蘭縣",
+    shortName: "宜",
+    totalLocations: 603,
+    categories: [
+      {
+        name: "美食",
+        items: [
+          { date: "2025/12/29", title: "楓情卡拉 ok", category: "美食" },
+          { date: "2025/12/29", title: "The Roof 190 星空酒吧", description: "城市高空賞星空，特調美酒伴夜色。適合情侶約會，或與摯友小酌。", category: "美食" },
+          { date: "2025/12/29", title: "牛媽媽軟心宜蘭餅", description: "獨創軟心宜蘭餅，口感綿密細緻。創新滋味，是下午茶或送禮的溫暖心意。", category: "美食" },
+          { date: "2025/12/29", title: "邂逅街冰淇淋·咖椰吐司·甜點咖啡專賣（電話故障，請改以 FB 或 IG 聯繫）", description: "冰淇淋、咖椰吐司與咖啡香，甜蜜交織。適合午后約會，享受悠閒甜點時光。", category: "美食" },
+        ],
+      },
+      {
+        name: "遊程體驗",
+        items: [
+          { date: "2025/12/28", title: "Healtdeva 赫蒂法莊園", description: "赫蒂法莊園歐風城堡，秒變公主！情侶閨蜜來打卡。", category: "遊程體驗" },
+        ],
+      },
     ],
   },
   {
-    country: "台灣",
-    cities: [
-      { name: "台北", collected: 10, total: 12, icon: "🏙️" },
-      { name: "台中", collected: 4, total: 8, icon: "☀️" },
-      { name: "高雄", collected: 6, total: 10, icon: "🌊" },
+    name: "台北市",
+    shortName: "台",
+    totalLocations: 353,
+    categories: [
+      {
+        name: "美食",
+        items: [
+          { date: "2025/12/28", title: "鼎泰豐", description: "世界知名小籠包，皮薄餡鮮。", category: "美食" },
+        ],
+      },
     ],
   },
   {
-    country: "韓國",
-    cities: [
-      { name: "首爾", collected: 4, total: 14, icon: "🎭" },
-      { name: "釜山", collected: 2, total: 8, icon: "🌉" },
-    ],
+    name: "高雄市",
+    shortName: "高",
+    totalLocations: 163,
+    categories: [],
+  },
+  {
+    name: "新北市",
+    shortName: "新",
+    totalLocations: 82,
+    categories: [],
+  },
+  {
+    name: "桃園市",
+    shortName: "桃",
+    totalLocations: 22,
+    categories: [],
+  },
+  {
+    name: "新竹縣",
+    shortName: "新",
+    totalLocations: 22,
+    categories: [],
   },
 ];
 
 const CollectionPage = () => {
-  const totalCollected = collections.reduce(
-    (acc, country) => acc + country.cities.reduce((sum, city) => sum + city.collected, 0),
-    0
-  );
-  const totalItems = collections.reduce(
-    (acc, country) => acc + country.cities.reduce((sum, city) => sum + city.total, 0),
-    0
-  );
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<"gacha" | "collection">("collection");
+  const [expandedCounty, setExpandedCounty] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const handleMapClick = (title: string) => {
+    window.open(`https://www.google.com/maps/search/${encodeURIComponent(title)}`, "_blank");
+  };
 
   return (
     <PageLayout>
-      <div className="px-4 pt-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">我的圖鑑</h1>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-card rounded-full border border-border">
-            <span className="text-sm font-medium text-primary">{totalCollected}</span>
-            <span className="text-sm text-muted">/ {totalItems}</span>
+      <div className="flex flex-col min-h-full">
+        {/* Connected Top Navigation Tabs */}
+        <div className="bg-background border-b border-border">
+          <div className="flex">
+            <button
+              onClick={() => {
+                setActiveTab("gacha");
+                navigate("/gacha");
+              }}
+              className={`flex-1 py-4 text-base font-medium transition-all relative ${
+                activeTab === "gacha"
+                  ? "text-primary"
+                  : "text-muted"
+              }`}
+            >
+              扭蛋
+              {activeTab === "gacha" && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("collection")}
+              className={`flex-1 py-4 text-base font-medium transition-all relative ${
+                activeTab === "collection"
+                  ? "text-primary"
+                  : "text-muted"
+              }`}
+            >
+              圖鑑
+              {activeTab === "collection" && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Featured collection image */}
-        <div className="relative rounded-2xl overflow-hidden shadow-lg">
-          <img
-            src={mibuCollection2}
-            alt="Mibu 收藏展示"
-            className="w-full h-40 object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-          <div className="absolute bottom-4 left-4 text-primary-foreground">
-            <p className="text-sm opacity-90">本月精選</p>
-            <p className="text-lg font-bold">世界各地的 Mibu</p>
-          </div>
-        </div>
+        <div className="flex-1 px-4 pt-6 pb-4">
+          <h1 className="text-2xl font-bold text-foreground mb-6">我的圖鑑</h1>
 
-        {/* Collections by country */}
-        {collections.map((countryData) => (
-          <div key={countryData.country} className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-5 bg-primary rounded-full" />
-              <h2 className="text-lg font-semibold text-foreground">{countryData.country}</h2>
-            </div>
-
-            <div className="space-y-2">
-              {countryData.cities.map((city) => (
-                <Card
-                  key={city.name}
-                  className="rounded-2xl border-border shadow-sm card-hover cursor-pointer"
+          {/* County list */}
+          <div className="space-y-3">
+            {taiwanCollections.map((county) => (
+              <div key={county.name} className="space-y-3">
+                {/* County card */}
+                <button
+                  onClick={() => setExpandedCounty(expandedCounty === county.name ? null : county.name)}
+                  className="w-full bg-card rounded-2xl border border-border p-4 flex items-center gap-4 btn-press"
                 >
-                  <CardContent className="p-4 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center text-2xl">
-                      {city.icon}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">{city.name}</span>
-                        <MapPin className="w-3 h-3 text-muted" />
+                  {/* Short name badge */}
+                  <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span className="text-lg font-bold text-primary-foreground">{county.shortName}</span>
+                  </div>
+
+                  {/* County info */}
+                  <div className="flex-1 text-left">
+                    <h3 className="font-bold text-foreground">{county.name}</h3>
+                    <p className="text-sm text-muted">{county.totalLocations} 個地點</p>
+                  </div>
+
+                  {/* Expand arrow */}
+                  <span className={`text-muted transition-transform ${expandedCounty === county.name ? "rotate-180" : ""}`}>
+                    ▼
+                  </span>
+                </button>
+
+                {/* Expanded categories */}
+                {expandedCounty === county.name && county.categories.length > 0 && (
+                  <div className="ml-4 space-y-3 animate-fade-in">
+                    {county.categories.map((category) => (
+                      <div key={category.name} className="space-y-3">
+                        {/* Category header */}
+                        <button
+                          onClick={() => setExpandedCategory(
+                            expandedCategory === `${county.name}-${category.name}` 
+                              ? null 
+                              : `${county.name}-${category.name}`
+                          )}
+                          className="flex items-center gap-3 w-full text-left"
+                        >
+                          <div className="w-1 h-6 bg-primary/40 rounded-full" />
+                          <span className="font-medium text-foreground">{category.name}</span>
+                          <span className="px-2 py-0.5 bg-secondary text-primary text-xs rounded-full">
+                            {category.items.length}
+                          </span>
+                          <span className={`text-muted ml-auto transition-transform ${
+                            expandedCategory === `${county.name}-${category.name}` ? "rotate-180" : ""
+                          }`}>
+                            ▼
+                          </span>
+                        </button>
+
+                        {/* Category items */}
+                        {expandedCategory === `${county.name}-${category.name}` && (
+                          <div className="ml-4 space-y-3 animate-fade-in">
+                            {category.items.map((item, index) => (
+                              <TripCard
+                                key={index}
+                                date={item.date}
+                                duration=""
+                                category={item.category}
+                                title={item.title}
+                                description={item.description}
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full transition-all"
-                            style={{ width: `${(city.collected / city.total) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-xs text-muted whitespace-nowrap">
-                          {city.collected}/{city.total}
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Empty state for counties with no items */}
+                {expandedCounty === county.name && county.categories.length === 0 && (
+                  <div className="ml-4 p-4 text-center text-muted text-sm animate-fade-in">
+                    尚未收集任何地點
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </PageLayout>
   );
