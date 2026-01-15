@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import TripCard from "@/components/TripCard";
 import ItemBox from "@/components/ItemBox";
 import CollectionContent from "@/components/CollectionContent";
+import { useCollection } from "@/hooks/useCollection";
 import mibuLogo from "@/assets/mibu-logo.jpeg";
 
 // 國家 -> 縣市結構
@@ -35,9 +36,26 @@ const GachaPage = () => {
   const [showResult, setShowResult] = useState(false);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [showCountyDropdown, setShowCountyDropdown] = useState(false);
+  const [currentResults, setCurrentResults] = useState<typeof sampleResults>([]);
+
+  const { addMultipleToCollection } = useCollection();
 
   const handleGacha = () => {
+    // 隨機選取扭蛋結果
+    const shuffled = [...sampleResults].sort(() => Math.random() - 0.5);
+    const results = shuffled.slice(0, gachaCount[0]);
+    setCurrentResults(results);
     setShowResult(true);
+
+    // 自動收藏到圖鑑
+    const itemsToAdd = results.map(result => ({
+      title: result.title,
+      description: result.description,
+      category: result.category,
+      county: selectedCounty,
+      duration: result.duration,
+    }));
+    addMultipleToCollection(itemsToAdd);
   };
 
   const handleMapClick = (title: string) => {
@@ -214,6 +232,9 @@ const GachaPage = () => {
                     <p className="text-sm text-muted">
                       正在探索 <span className="text-primary">{selectedCountry}</span>
                     </p>
+                    <p className="text-xs text-primary mt-2">
+                      ✨ 已自動收藏 {currentResults.length} 個地點到圖鑑
+                    </p>
                   </div>
 
                   {/* Main area map link */}
@@ -229,7 +250,7 @@ const GachaPage = () => {
 
                   {/* Trip cards */}
                   <div className="space-y-4 mb-6">
-                    {sampleResults.slice(0, gachaCount[0]).map((result, index) => (
+                    {currentResults.map((result, index) => (
                       <TripCard
                         key={index}
                         duration={result.duration}

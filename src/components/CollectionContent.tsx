@@ -1,103 +1,43 @@
 import { useState } from "react";
 import TripCard from "@/components/TripCard";
-
-interface CollectionItem {
-  date: string;
-  title: string;
-  description?: string;
-  category: string;
-  checkInCount: number;
-}
-
-interface CategoryData {
-  name: string;
-  items: CollectionItem[];
-}
-
-interface CountyData {
-  name: string;
-  shortName: string;
-  totalLocations: number;
-  categories: CategoryData[];
-}
-
-export const taiwanCollections: CountyData[] = [
-  {
-    name: "宜蘭縣",
-    shortName: "宜",
-    totalLocations: 603,
-    categories: [
-      {
-        name: "美食",
-        items: [
-          { date: "2025/12/29", title: "楓情卡拉 ok", category: "美食", checkInCount: 3 },
-          { date: "2025/12/29", title: "The Roof 190 星空酒吧", description: "城市高空賞星空，特調美酒伴夜色。適合情侶約會，或與摯友小酌。", category: "美食", checkInCount: 12 },
-          { date: "2025/12/29", title: "牛媽媽軟心宜蘭餅", description: "獨創軟心宜蘭餅，口感綿密細緻。創新滋味，是下午茶或送禮的溫暖心意。", category: "美食", checkInCount: 28 },
-          { date: "2025/12/29", title: "邂逅街冰淇淋·咖椰吐司·甜點咖啡專賣", description: "冰淇淋、咖椰吐司與咖啡香，甜蜜交織。適合午后約會，享受悠閒甜點時光。", category: "美食", checkInCount: 45 },
-        ],
-      },
-      {
-        name: "遊程體驗",
-        items: [
-          { date: "2025/12/28", title: "Healtdeva 赫蒂法莊園", description: "赫蒂法莊園歐風城堡，秒變公主！情侶閨蜜來打卡。", category: "遊程體驗", checkInCount: 52 },
-        ],
-      },
-    ],
-  },
-  {
-    name: "台北市",
-    shortName: "台",
-    totalLocations: 353,
-    categories: [
-      {
-        name: "美食",
-        items: [
-          { date: "2025/12/28", title: "鼎泰豐", description: "世界知名小籠包，皮薄餡鮮。", category: "美食", checkInCount: 8 },
-        ],
-      },
-    ],
-  },
-  {
-    name: "高雄市",
-    shortName: "高",
-    totalLocations: 163,
-    categories: [],
-  },
-  {
-    name: "新北市",
-    shortName: "新",
-    totalLocations: 82,
-    categories: [],
-  },
-  {
-    name: "桃園市",
-    shortName: "桃",
-    totalLocations: 22,
-    categories: [],
-  },
-  {
-    name: "新竹縣",
-    shortName: "竹",
-    totalLocations: 22,
-    categories: [],
-  },
-];
+import { useCollection } from "@/hooks/useCollection";
 
 const CollectionContent = () => {
   const [expandedCounty, setExpandedCounty] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  const { getGroupedByCounty, getTotalCount, getTotalCheckIns } = useCollection();
+  const collections = getGroupedByCounty();
+
   const handleMapClick = (title: string) => {
     window.open(`https://www.google.com/maps/search/${encodeURIComponent(title)}`, "_blank");
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/');
+  };
+
   return (
     <div className="animate-fade-in">
-      <h1 className="text-2xl font-bold text-foreground mb-6">我的圖鑑</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-2">我的圖鑑</h1>
+      <p className="text-sm text-muted mb-6">
+        已收藏 <span className="text-primary font-medium">{getTotalCount()}</span> 個地點，
+        共打卡 <span className="text-primary font-medium">{getTotalCheckIns()}</span> 次
+      </p>
+
+      {/* Empty state */}
+      {collections.length === 0 && (
+        <div className="text-center py-12">
+          <div className="text-4xl mb-4">🎰</div>
+          <p className="text-muted">還沒有收藏任何地點</p>
+          <p className="text-sm text-muted mt-1">去扭蛋探索新地點吧！</p>
+        </div>
+      )}
 
       {/* County list */}
       <div className="space-y-3">
-        {taiwanCollections.map((county) => (
+        {collections.map((county) => (
           <div key={county.name} className="space-y-3">
             {/* County card */}
             <button
@@ -150,11 +90,11 @@ const CollectionContent = () => {
                     {/* Category items */}
                     {expandedCategory === `${county.name}-${category.name}` && (
                       <div className="ml-4 space-y-3 animate-fade-in">
-                        {category.items.map((item, index) => (
+                        {category.items.map((item) => (
                           <TripCard
-                            key={index}
-                            date={item.date}
-                            duration=""
+                            key={item.id}
+                            date={formatDate(item.lastCollectedAt)}
+                            duration={item.duration || ""}
                             category={item.category}
                             title={item.title}
                             description={item.description}

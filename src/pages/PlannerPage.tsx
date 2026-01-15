@@ -1,19 +1,22 @@
 import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Map, MessageCircle, CalendarDays, Lock, Check, Sparkles } from "lucide-react";
+import { Map, MessageCircle, CalendarDays, Lock, Check, Sparkles, Calendar } from "lucide-react";
 import PlannerMap from "@/components/PlannerMap";
 import ChatRoom from "@/components/ChatRoom";
 import Itinerary from "@/components/Itinerary";
-
-// Simulate purchase state - in real app this would come from auth/database
-const usePlannerPurchase = () => {
-  const [isPurchased, setIsPurchased] = useState(true); // Default to true for demo
-  return { isPurchased, purchase: () => setIsPurchased(true) };
-};
+import { usePurchase } from "@/hooks/usePurchase";
 
 const PlannerPage = () => {
-  const { isPurchased, purchase } = usePlannerPurchase();
+  const { 
+    isPurchased, 
+    days, 
+    startDate, 
+    setDays, 
+    setStartDate, 
+    confirmPurchase, 
+    calculatePrice 
+  } = usePurchase();
   const [activeTab, setActiveTab] = useState<"map" | "chat" | "itinerary">("map");
 
   // Not purchased - show intro page
@@ -56,15 +59,52 @@ const PlannerPage = () => {
               ))}
             </div>
 
+            {/* Days selector */}
+            <div className="w-full max-w-sm mb-4">
+              <label className="text-sm font-medium text-foreground mb-2 block text-left">選擇天數</label>
+              <div className="flex gap-2 flex-wrap">
+                {[1, 2, 3, 4, 5].map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setDays(d)}
+                    className={`flex-1 min-w-[56px] py-3 rounded-xl font-medium transition-all ${
+                      days === d
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-card border border-border text-foreground hover:bg-secondary'
+                    }`}
+                  >
+                    {d} 天
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Date picker */}
+            <div className="w-full max-w-sm mb-6">
+              <label className="text-sm font-medium text-foreground mb-2 block text-left">旅程開始日期</label>
+              <div className="relative">
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+            </div>
+
             {/* Pricing */}
             <div className="w-full max-w-sm p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl border border-primary/20 mb-6">
               <p className="text-sm text-muted mb-2">服務費用</p>
-              <div className="flex items-baseline justify-center gap-1 mb-4">
-                <span className="text-4xl font-bold text-foreground">NT$ 299</span>
-                <span className="text-muted">/ 次旅程</span>
+              <div className="flex items-baseline justify-center gap-1 mb-1">
+                <span className="text-4xl font-bold text-foreground">NT$ {calculatePrice(days)}</span>
               </div>
+              <p className="text-sm text-muted mb-4">
+                NT$ 299 × {days} 天
+              </p>
               <ul className="space-y-2 text-sm text-left">
-                {["專業策劃師一對一服務", "無限次團員邀請", "行程表規劃工具", "緊急聯絡支援"].map((item, i) => (
+                {["專業策劃師一對一服務", "無限次團員邀請", `${days} 天行程表規劃工具`, "緊急聯絡支援"].map((item, i) => (
                   <li key={i} className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-primary" />
                     <span className="text-foreground">{item}</span>
@@ -75,11 +115,11 @@ const PlannerPage = () => {
 
             {/* Purchase button */}
             <Button
-              onClick={purchase}
+              onClick={confirmPurchase}
               className="w-full max-w-sm h-14 text-lg font-bold rounded-2xl bg-primary hover:bg-primary/90"
             >
               <Lock className="w-5 h-5 mr-2" />
-              開始使用
+              確認購買
             </Button>
           </div>
         </div>
