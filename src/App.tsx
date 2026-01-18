@@ -19,6 +19,16 @@ import AchievementsPage from "./pages/AchievementsPage";
 import PlannerPage from "./pages/PlannerPage";
 import ReferralPage from "./pages/ReferralPage";
 
+// Merchant pages
+import MerchantDashboard from "./pages/merchant/MerchantDashboard";
+import MerchantAnalytics from "./pages/merchant/MerchantAnalytics";
+import MerchantTransactions from "./pages/merchant/MerchantTransactions";
+import MerchantVerifyCode from "./pages/merchant/MerchantVerifyCode";
+import MerchantStores from "./pages/merchant/MerchantStores";
+import MerchantProducts from "./pages/merchant/MerchantProducts";
+import MerchantCoupons from "./pages/merchant/MerchantCoupons";
+import MerchantProfile from "./pages/merchant/MerchantProfile";
+
 const queryClient = new QueryClient();
 
 // 登入追蹤組件
@@ -57,6 +67,17 @@ const AppContent = () => (
       <Route path="/map" element={<MapPage />} />
       <Route path="/achievements" element={<AchievementsPage />} />
       <Route path="/referral" element={<ReferralPage />} />
+      
+      {/* Merchant routes */}
+      <Route path="/merchant" element={<MerchantDashboard />} />
+      <Route path="/merchant/analytics" element={<MerchantAnalytics />} />
+      <Route path="/merchant/transactions" element={<MerchantTransactions />} />
+      <Route path="/merchant/verify" element={<MerchantVerifyCode />} />
+      <Route path="/merchant/stores" element={<MerchantStores />} />
+      <Route path="/merchant/products" element={<MerchantProducts />} />
+      <Route path="/merchant/coupons" element={<MerchantCoupons />} />
+      <Route path="/merchant/profile" element={<MerchantProfile />} />
+      
       <Route path="*" element={<NotFound />} />
     </Routes>
   </>
