@@ -19,13 +19,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useNavigate } from "react-router-dom";
 import mibuPeek from "@/assets/mibu-peek.jpeg";
-import ReferralSystem from "@/components/ReferralSystem";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
-  const [referralOpen, setReferralOpen] = useState(false);
 
   const settingGroups = [
     {
@@ -40,7 +38,7 @@ const SettingsPage = () => {
         { 
           icon: Gift, 
           label: "邀請好友賺獎勵", 
-          action: () => setReferralOpen(true),
+          action: () => navigate("/referral"),
           hasArrow: true,
           highlight: true
         },
@@ -186,9 +184,6 @@ const SettingsPage = () => {
           Mibu v1.0.0
         </p>
       </div>
-
-      {/* Referral System Dialog */}
-      <ReferralSystem open={referralOpen} onOpenChange={setReferralOpen} />
     </PageLayout>
   );
 };
