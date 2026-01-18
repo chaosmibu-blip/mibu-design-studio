@@ -191,11 +191,11 @@ const GachaPage = () => {
                     </div>
                   </div>
 
-                  {/* Gacha button */}
+                  {/* Gacha button - 只有下沉效果，不震動 */}
                   <Button
                     onClick={handleGacha}
                     size="lg"
-                    className="w-full h-16 text-lg font-bold rounded-2xl shadow-elevated bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300"
+                    className="w-full h-16 text-lg font-bold rounded-2xl shadow-elevated bg-primary hover:bg-primary/95 transition-all duration-150 active:translate-y-0.5 active:shadow-medium"
                   >
                     開始扭蛋！
                   </Button>
@@ -228,17 +228,25 @@ const GachaPage = () => {
                     在 Google 地圖中查看
                   </button>
 
-                  {/* Trip cards */}
+                  {/* Trip cards - 序列進入動畫 */}
                   <div className="space-y-4">
                     {currentResults.map((result, index) => (
-                      <TripCard
+                      <div
                         key={index}
-                        duration={result.duration}
-                        category={result.category}
-                        title={result.title}
-                        description={result.description}
-                        onMapClick={() => handleMapClick(result.title)}
-                      />
+                        className="animate-slide-up"
+                        style={{
+                          animationDelay: `${index * 0.1}s`,
+                          animationFillMode: "both",
+                        }}
+                      >
+                        <TripCard
+                          duration={result.duration}
+                          category={result.category}
+                          title={result.title}
+                          description={result.description}
+                          onMapClick={() => handleMapClick(result.title)}
+                        />
+                      </div>
                     ))}
                   </div>
 
