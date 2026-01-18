@@ -19,28 +19,28 @@ export interface OneTimeQuest {
   category: "exploration" | "social" | "collection" | "special";
 }
 
-// 每日任務列表
+// 每日任務列表（全部對應現有功能）
 const initialDailyQuests: DailyQuest[] = [
   { id: "daily_login", title: "每日簽到", description: "登入 APP", xpReward: 15, isCompleted: true, icon: "CalendarCheck" },
   { id: "daily_gacha", title: "每日扭蛋", description: "完成 1 次扭蛋", xpReward: 10, isCompleted: true, icon: "Dices" },
   { id: "view_collection", title: "瀏覽圖鑑", description: "查看圖鑑頁", xpReward: 5, isCompleted: false, icon: "BookOpen" },
-  { id: "send_message", title: "分享心情", description: "發送聊天訊息", xpReward: 5, isCompleted: false, icon: "MessageCircle" },
-  { id: "view_map", title: "探索地圖", description: "查看地圖頁", xpReward: 5, isCompleted: true, icon: "MapPin" },
+  { id: "view_planner", title: "查看行程", description: "查看旅程策劃", xpReward: 5, isCompleted: false, icon: "Map" },
+  { id: "view_map", title: "探索地圖", description: "查看世界地圖", xpReward: 5, isCompleted: true, icon: "Globe" },
 ];
 
 // 每日全勤獎勵
 const DAILY_COMPLETE_BONUS = 30;
 
-// 一次性任務列表
+// 一次性任務列表（全部對應現有功能）
 const initialOneTimeQuests: OneTimeQuest[] = [
   { id: "first_gacha", title: "初次探索", description: "完成第一次扭蛋", xpReward: 50, isCompleted: true, icon: "Dices", category: "exploration" },
-  { id: "first_profile", title: "建立檔案", description: "完成個人資料", xpReward: 30, isCompleted: false, icon: "UserPen", category: "exploration" },
-  { id: "first_preferences", title: "選擇偏好", description: "設定旅遊偏好", xpReward: 20, isCompleted: true, icon: "Target", category: "exploration" },
-  { id: "first_avatar", title: "頭像達人", description: "更換頭像", xpReward: 15, isCompleted: false, icon: "Image", category: "exploration" },
-  { id: "first_message", title: "社交蝴蝶", description: "發送第一則訊息", xpReward: 20, isCompleted: false, icon: "Send", category: "social" },
-  { id: "first_referral", title: "推薦先鋒", description: "成功邀請第一位好友", xpReward: 100, isCompleted: false, icon: "Users", category: "social" },
+  { id: "first_profile", title: "建立檔案", description: "設定個人暱稱", xpReward: 30, isCompleted: false, icon: "UserPen", category: "exploration" },
+  { id: "first_avatar", title: "頭像達人", description: "更換個人頭像", xpReward: 15, isCompleted: false, icon: "Image", category: "exploration" },
+  { id: "first_preferences", title: "選擇偏好", description: "設定旅遊偏好標籤", xpReward: 20, isCompleted: true, icon: "Target", category: "exploration" },
   { id: "first_purchase", title: "首購達成", description: "購買第一個行程", xpReward: 150, isCompleted: false, icon: "ShoppingBag", category: "special" },
-  { id: "first_checkin", title: "打卡新星", description: "完成第一次打卡", xpReward: 30, isCompleted: false, icon: "MapPinCheck", category: "collection" },
+  { id: "first_referral", title: "推薦先鋒", description: "成功邀請第一位好友", xpReward: 100, isCompleted: false, icon: "Users", category: "social" },
+  { id: "first_item_use", title: "道具新手", description: "使用第一個道具", xpReward: 20, isCompleted: false, icon: "Package", category: "collection" },
+  { id: "first_itinerary", title: "規劃達人", description: "建立第一個行程項目", xpReward: 30, isCompleted: false, icon: "ClipboardList", category: "collection" },
 ];
 
 export const useDailyQuests = () => {

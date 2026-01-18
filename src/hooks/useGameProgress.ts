@@ -78,24 +78,28 @@ export interface XPAction {
 }
 
 export const XP_ACTIONS: XPAction[] = [
+  // 每日任務
   { type: "daily_login", label: "每日簽到", xp: 15 },
   { type: "gacha", label: "完成扭蛋", xp: 10 },
   { type: "view_collection", label: "瀏覽圖鑑", xp: 5 },
-  { type: "send_message", label: "分享心情", xp: 5 },
+  { type: "view_planner", label: "查看行程", xp: 5 },
   { type: "view_map", label: "探索地圖", xp: 5 },
   { type: "daily_complete", label: "每日全勤", xp: 30 },
-  { type: "checkin", label: "打卡簽到", xp: 20 },
-  { type: "trip_complete", label: "完成行程", xp: 50 },
+  // 一次性任務
+  { type: "first_gacha", label: "初次探索", xp: 50 },
+  { type: "first_profile", label: "建立檔案", xp: 30 },
+  { type: "first_avatar", label: "頭像達人", xp: 15 },
+  { type: "first_preferences", label: "選擇偏好", xp: 20 },
+  { type: "first_purchase", label: "首購達成", xp: 150 },
+  { type: "first_referral", label: "推薦先鋒", xp: 100 },
+  { type: "first_item_use", label: "道具新手", xp: 20 },
+  { type: "first_itinerary", label: "規劃達人", xp: 30 },
+  // 成就獎勵
   { type: "achievement", label: "解鎖成就", xp: 30 },
   { type: "referral", label: "推薦好友成功", xp: 50 },
   { type: "referred", label: "被推薦註冊", xp: 30 },
   { type: "purchase", label: "購買行程", xp: 100 },
-  { type: "first_gacha", label: "初次探索", xp: 50 },
-  { type: "first_profile", label: "建立檔案", xp: 30 },
-  { type: "first_avatar", label: "頭像達人", xp: 15 },
-  { type: "first_message", label: "社交蝴蝶", xp: 20 },
-  { type: "first_purchase", label: "首購達成", xp: 150 },
-  { type: "first_checkin", label: "打卡新星", xp: 30 },
+  // 連續登入獎勵
   { type: "streak_7", label: "連續7天登入", xp: 50 },
   { type: "streak_30", label: "連續30天登入", xp: 150 },
   { type: "streak_100", label: "連續100天登入", xp: 400 },
