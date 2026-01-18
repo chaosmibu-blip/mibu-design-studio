@@ -30,7 +30,7 @@ export interface OneTimeAchievement {
   unlockedAt?: string;
 }
 
-// 累計型成就
+// 累計型成就（全部對應現有功能）
 const initialCumulativeAchievements: CumulativeAchievement[] = [
   {
     id: "gacha_master",
@@ -47,12 +47,12 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     ],
   },
   {
-    id: "food_hunter",
-    name: "美食獵人",
-    description: "收集美食景點",
-    icon: "Utensils",
+    id: "collector",
+    name: "收藏家",
+    description: "圖鑑收集數量",
+    icon: "BookOpen",
     category: "collection",
-    currentProgress: 15,
+    currentProgress: 28,
     stages: [
       { tier: "bronze", target: 10, xpReward: 30, isUnlocked: true },
       { tier: "silver", target: 50, xpReward: 80, isUnlocked: false },
@@ -71,7 +71,6 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
       { tier: "bronze", target: 7, xpReward: 50, isUnlocked: false },
       { tier: "silver", target: 30, xpReward: 150, isUnlocked: false },
       { tier: "gold", target: 100, xpReward: 400, isUnlocked: false },
-      { tier: "diamond", target: 365, xpReward: 1000, isUnlocked: false },
     ],
   },
   {
@@ -85,65 +84,30 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
       { tier: "bronze", target: 3, xpReward: 50, isUnlocked: false },
       { tier: "silver", target: 10, xpReward: 150, isUnlocked: false },
       { tier: "gold", target: 30, xpReward: 400, isUnlocked: false },
-      { tier: "diamond", target: 100, xpReward: 1000, isUnlocked: false },
     ],
   },
   {
-    id: "checkin_master",
-    name: "打卡大師",
-    description: "完成打卡次數",
-    icon: "MapPinCheck",
-    category: "collection",
-    currentProgress: 8,
-    stages: [
-      { tier: "bronze", target: 10, xpReward: 30, isUnlocked: false },
-      { tier: "silver", target: 50, xpReward: 100, isUnlocked: false },
-      { tier: "gold", target: 200, xpReward: 300, isUnlocked: false },
-      { tier: "diamond", target: 500, xpReward: 800, isUnlocked: false },
-    ],
-  },
-  {
-    id: "trip_explorer",
-    name: "行程探險家",
-    description: "完成行程次數",
+    id: "trip_planner",
+    name: "行程規劃師",
+    description: "購買行程數量",
     icon: "Plane",
     category: "exploration",
-    currentProgress: 3,
+    currentProgress: 0,
     stages: [
-      { tier: "bronze", target: 5, xpReward: 50, isUnlocked: false },
-      { tier: "silver", target: 20, xpReward: 150, isUnlocked: false },
-      { tier: "gold", target: 50, xpReward: 400, isUnlocked: false },
-      { tier: "diamond", target: 100, xpReward: 800, isUnlocked: false },
-    ],
-  },
-  {
-    id: "collector",
-    name: "收藏家",
-    description: "圖鑑收集數量",
-    icon: "BookOpen",
-    category: "collection",
-    currentProgress: 28,
-    stages: [
-      { tier: "bronze", target: 20, xpReward: 30, isUnlocked: true },
-      { tier: "silver", target: 100, xpReward: 100, isUnlocked: false },
-      { tier: "gold", target: 300, xpReward: 300, isUnlocked: false },
-      { tier: "diamond", target: 500, xpReward: 800, isUnlocked: false },
+      { tier: "bronze", target: 1, xpReward: 50, isUnlocked: false },
+      { tier: "silver", target: 5, xpReward: 150, isUnlocked: false },
+      { tier: "gold", target: 20, xpReward: 400, isUnlocked: false },
     ],
   },
 ];
 
-// 一次性成就
+// 一次性成就（全部對應現有功能）
 const initialOneTimeAchievements: OneTimeAchievement[] = [
   { id: "first_adventure", name: "初次冒險", description: "完成第一次扭蛋", icon: "Dices", category: "exploration", xpReward: 30, isUnlocked: true, unlockedAt: "2024-01-15" },
-  { id: "world_first", name: "初見世界", description: "解鎖第一個國家", icon: "Globe", category: "exploration", xpReward: 50, isUnlocked: true, unlockedAt: "2024-01-16" },
-  { id: "diamond_hunter", name: "鑽石獵人", description: "獲得第一張鑽石卡", icon: "Gem", category: "collection", xpReward: 100, isUnlocked: false },
-  { id: "popularity_king", name: "人氣王", description: "邀請 10 位好友", icon: "Crown", category: "social", xpReward: 200, isUnlocked: false },
-  { id: "first_buy", name: "首購達成", description: "完成第一筆購買", icon: "ShoppingBag", category: "special", xpReward: 100, isUnlocked: false },
+  { id: "city_explorer", name: "城市探險家", description: "解鎖第一個城市", icon: "Globe", category: "exploration", xpReward: 50, isUnlocked: true, unlockedAt: "2024-01-16" },
+  { id: "diamond_hunter", name: "鑽石獵人", description: "獲得第一張稀有卡", icon: "Gem", category: "collection", xpReward: 100, isUnlocked: false },
+  { id: "itinerary_start", name: "行程啟程", description: "購買第一個行程", icon: "ShoppingBag", category: "special", xpReward: 100, isUnlocked: false },
   { id: "anniversary", name: "周年慶典", description: "註冊滿一年", icon: "Cake", category: "special", xpReward: 500, isUnlocked: false },
-  { id: "night_owl", name: "夜貓子", description: "凌晨 2-4 點登入", icon: "Moon", category: "special", xpReward: 30, isUnlocked: false },
-  { id: "early_bird", name: "早起鳥", description: "連續 7 天早上 6 點前登入", icon: "Sunrise", category: "special", xpReward: 80, isUnlocked: false },
-  { id: "taiwan_master", name: "台灣通", description: "收集全部台灣縣市", icon: "Map", category: "collection", xpReward: 300, isUnlocked: false },
-  { id: "lucky_draw", name: "歐皇降臨", description: "單次扭蛋獲得鑽石卡", icon: "Sparkles", category: "special", xpReward: 50, isUnlocked: false },
 ];
 
 export const TIER_COLORS: Record<AchievementTier, string> = {

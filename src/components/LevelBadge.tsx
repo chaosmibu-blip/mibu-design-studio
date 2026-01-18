@@ -1,14 +1,12 @@
 import { getTierForLevel, LevelTier } from "@/hooks/useGameProgress";
-import Icon from "@/components/ui/icon";
 
 interface LevelBadgeProps {
   level: number;
   size?: "sm" | "md" | "lg" | "xl";
   showName?: boolean;
-  showIcon?: boolean;
 }
 
-const LevelBadge = ({ level, size = "md", showName = true, showIcon = true }: LevelBadgeProps) => {
+const LevelBadge = ({ level, size = "md", showName = true }: LevelBadgeProps) => {
   const tier = getTierForLevel(level);
 
   const sizeClasses = {
@@ -25,12 +23,6 @@ const LevelBadge = ({ level, size = "md", showName = true, showIcon = true }: Le
     xl: "text-lg",
   };
 
-  const iconSizeClasses = {
-    sm: "text-sm",
-    md: "text-lg",
-    lg: "text-xl",
-    xl: "text-2xl",
-  };
 
   // 品牌色漸層設計 - 根據階段使用不同顏色
   const getBrandGradient = (tier: LevelTier) => {
@@ -60,7 +52,7 @@ const LevelBadge = ({ level, size = "md", showName = true, showIcon = true }: Le
         
         {/* 主徽章 */}
         <div 
-          className={`${sizeClasses[size]} rounded-full ${getBrandGradient(tier)} flex flex-col items-center justify-center font-bold text-primary-foreground shadow-medium relative overflow-hidden`}
+          className={`${sizeClasses[size]} rounded-full ${getBrandGradient(tier)} flex items-center justify-center font-bold text-primary-foreground shadow-medium relative overflow-hidden`}
         >
           {/* 光澤效果 */}
           <div className="absolute inset-0 bg-gradient-to-tr from-white/30 via-transparent to-transparent" />
@@ -69,13 +61,6 @@ const LevelBadge = ({ level, size = "md", showName = true, showIcon = true }: Le
           <span className="relative z-10 font-bold leading-none">
             Lv.{level}
           </span>
-          
-          {/* 階段圖示 */}
-          {showIcon && (
-            <span className="relative z-10 leading-none">
-              <Icon name={tier.icon} className={`${size === "sm" ? "w-3 h-3" : size === "md" ? "w-4 h-4" : size === "lg" ? "w-5 h-5" : "w-6 h-6"}`} />
-            </span>
-          )}
         </div>
       </div>
       
