@@ -8,6 +8,7 @@ import {
   TIER_LABELS 
 } from "@/hooks/useAchievements";
 import { Lock, Check } from "lucide-react";
+import Icon from "@/components/ui/icon";
 
 interface CumulativeAchievementCardProps {
   achievement: CumulativeAchievement;
@@ -49,12 +50,12 @@ export const CumulativeAchievementCard = ({ achievement }: CumulativeAchievement
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           {/* 圖示 */}
-          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
             allCompleted 
               ? "bg-gradient-to-br from-primary/30 to-accent/30" 
               : "bg-secondary"
           }`}>
-            {achievement.icon}
+            <Icon name={achievement.icon} className={`w-6 h-6 ${allCompleted ? "text-primary" : "text-muted-foreground"}`} />
           </div>
           
           <div className="flex-1 min-w-0">
@@ -113,16 +114,16 @@ export const OneTimeAchievementCard = ({ achievement }: OneTimeAchievementCardPr
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           {/* 圖示 */}
-          <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl relative ${
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center relative ${
             achievement.isUnlocked 
               ? "bg-gradient-to-br from-primary/30 to-accent/30" 
-              : "bg-secondary grayscale"
+              : "bg-secondary"
           }`}>
             {achievement.isUnlocked ? (
-              achievement.icon
+              <Icon name={achievement.icon} className="w-5 h-5 text-primary" />
             ) : (
               <>
-                <span className="opacity-30">{achievement.icon}</span>
+                <Icon name={achievement.icon} className="w-5 h-5 text-muted-foreground opacity-30" />
                 <Lock className="w-4 h-4 absolute text-muted" />
               </>
             )}

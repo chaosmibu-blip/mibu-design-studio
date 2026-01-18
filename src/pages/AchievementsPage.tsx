@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Trophy, Star } from "lucide-react";
+import { ArrowLeft, Trophy, Star, Flame } from "lucide-react";
 import LevelBadge from "@/components/LevelBadge";
+import Icon from "@/components/ui/icon";
 import ExperienceBar from "@/components/ExperienceBar";
 import DailyQuests from "@/components/DailyQuests";
 import { CumulativeAchievementCard, OneTimeAchievementCard } from "@/components/AchievementCard";
@@ -98,7 +99,7 @@ const AchievementsPage = () => {
           </Card>
           <Card className="rounded-xl border-border shadow-soft">
             <CardContent className="p-3 text-center">
-              <span className="text-xl">🔥</span>
+              <Flame className="w-5 h-5 mx-auto text-orange-500 mb-1" />
               <p className="text-lg font-bold text-foreground">{progress.dailyLoginStreak}</p>
               <p className="text-xs text-muted">連續登入</p>
             </CardContent>
@@ -129,8 +130,8 @@ const AchievementsPage = () => {
                 <Card key={quest.id} className={`rounded-xl border-border shadow-soft ${quest.isCompleted ? "bg-primary/5" : ""}`}>
                   <CardContent className="p-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg ${quest.isCompleted ? "bg-primary/20" : "bg-secondary"}`}>
-                        {quest.icon}
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${quest.isCompleted ? "bg-primary/20" : "bg-secondary"}`}>
+                        <Icon name={quest.icon} className={`w-4 h-4 ${quest.isCompleted ? "text-primary" : "text-muted-foreground"}`} />
                       </div>
                       <div className="flex-1">
                         <h4 className={`text-sm font-medium ${quest.isCompleted ? "text-muted line-through" : "text-foreground"}`}>
@@ -182,8 +183,8 @@ const AchievementsPage = () => {
                 >
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${isUnlocked ? "bg-gradient-to-br from-primary/20 to-accent/20" : "bg-secondary"}`}>
-                        {tier.icon}
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isUnlocked ? "bg-gradient-to-br from-primary/20 to-accent/20" : "bg-secondary"}`}>
+                        <Icon name={tier.icon} className={`w-6 h-6 ${isUnlocked ? "text-primary" : "text-muted-foreground"}`} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">

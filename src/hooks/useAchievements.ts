@@ -36,7 +36,7 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     id: "gacha_master",
     name: "扭蛋達人",
     description: "完成扭蛋次數",
-    icon: "🎰",
+    icon: "Dices",
     category: "exploration",
     currentProgress: 23,
     stages: [
@@ -50,7 +50,7 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     id: "food_hunter",
     name: "美食獵人",
     description: "收集美食景點",
-    icon: "🍜",
+    icon: "Utensils",
     category: "collection",
     currentProgress: 15,
     stages: [
@@ -64,7 +64,7 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     id: "loyal_fan",
     name: "忠實粉絲",
     description: "連續登入天數",
-    icon: "🔥",
+    icon: "Flame",
     category: "special",
     currentProgress: 5,
     stages: [
@@ -78,7 +78,7 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     id: "social_butterfly",
     name: "社交達人",
     description: "邀請好友人數",
-    icon: "👥",
+    icon: "Users",
     category: "social",
     currentProgress: 2,
     stages: [
@@ -92,7 +92,7 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     id: "checkin_master",
     name: "打卡大師",
     description: "完成打卡次數",
-    icon: "📍",
+    icon: "MapPinCheck",
     category: "collection",
     currentProgress: 8,
     stages: [
@@ -106,7 +106,7 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     id: "trip_explorer",
     name: "行程探險家",
     description: "完成行程次數",
-    icon: "✈️",
+    icon: "Plane",
     category: "exploration",
     currentProgress: 3,
     stages: [
@@ -120,7 +120,7 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
     id: "collector",
     name: "收藏家",
     description: "圖鑑收集數量",
-    icon: "📚",
+    icon: "BookOpen",
     category: "collection",
     currentProgress: 28,
     stages: [
@@ -134,16 +134,16 @@ const initialCumulativeAchievements: CumulativeAchievement[] = [
 
 // 一次性成就
 const initialOneTimeAchievements: OneTimeAchievement[] = [
-  { id: "first_adventure", name: "初次冒險", description: "完成第一次扭蛋", icon: "🎲", category: "exploration", xpReward: 30, isUnlocked: true, unlockedAt: "2024-01-15" },
-  { id: "world_first", name: "初見世界", description: "解鎖第一個國家", icon: "🌍", category: "exploration", xpReward: 50, isUnlocked: true, unlockedAt: "2024-01-16" },
-  { id: "diamond_hunter", name: "鑽石獵人", description: "獲得第一張鑽石卡", icon: "💎", category: "collection", xpReward: 100, isUnlocked: false },
-  { id: "popularity_king", name: "人氣王", description: "邀請 10 位好友", icon: "👑", category: "social", xpReward: 200, isUnlocked: false },
-  { id: "first_buy", name: "首購達成", description: "完成第一筆購買", icon: "🛒", category: "special", xpReward: 100, isUnlocked: false },
-  { id: "anniversary", name: "周年慶典", description: "註冊滿一年", icon: "🎂", category: "special", xpReward: 500, isUnlocked: false },
-  { id: "night_owl", name: "夜貓子", description: "凌晨 2-4 點登入", icon: "🦉", category: "special", xpReward: 30, isUnlocked: false },
-  { id: "early_bird", name: "早起鳥", description: "連續 7 天早上 6 點前登入", icon: "🐦", category: "special", xpReward: 80, isUnlocked: false },
-  { id: "taiwan_master", name: "台灣通", description: "收集全部台灣縣市", icon: "🇹🇼", category: "collection", xpReward: 300, isUnlocked: false },
-  { id: "lucky_draw", name: "歐皇降臨", description: "單次扭蛋獲得鑽石卡", icon: "🍀", category: "special", xpReward: 50, isUnlocked: false },
+  { id: "first_adventure", name: "初次冒險", description: "完成第一次扭蛋", icon: "Dices", category: "exploration", xpReward: 30, isUnlocked: true, unlockedAt: "2024-01-15" },
+  { id: "world_first", name: "初見世界", description: "解鎖第一個國家", icon: "Globe", category: "exploration", xpReward: 50, isUnlocked: true, unlockedAt: "2024-01-16" },
+  { id: "diamond_hunter", name: "鑽石獵人", description: "獲得第一張鑽石卡", icon: "Gem", category: "collection", xpReward: 100, isUnlocked: false },
+  { id: "popularity_king", name: "人氣王", description: "邀請 10 位好友", icon: "Crown", category: "social", xpReward: 200, isUnlocked: false },
+  { id: "first_buy", name: "首購達成", description: "完成第一筆購買", icon: "ShoppingBag", category: "special", xpReward: 100, isUnlocked: false },
+  { id: "anniversary", name: "周年慶典", description: "註冊滿一年", icon: "Cake", category: "special", xpReward: 500, isUnlocked: false },
+  { id: "night_owl", name: "夜貓子", description: "凌晨 2-4 點登入", icon: "Moon", category: "special", xpReward: 30, isUnlocked: false },
+  { id: "early_bird", name: "早起鳥", description: "連續 7 天早上 6 點前登入", icon: "Sunrise", category: "special", xpReward: 80, isUnlocked: false },
+  { id: "taiwan_master", name: "台灣通", description: "收集全部台灣縣市", icon: "Map", category: "collection", xpReward: 300, isUnlocked: false },
+  { id: "lucky_draw", name: "歐皇降臨", description: "單次扭蛋獲得鑽石卡", icon: "Sparkles", category: "special", xpReward: 50, isUnlocked: false },
 ];
 
 export const TIER_COLORS: Record<AchievementTier, string> = {
