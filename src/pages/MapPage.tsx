@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Lock, Check, Globe, ArrowLeft, ChevronRight, Flame, Sparkles } from "lucide-react";
+import { useQuestTracking } from "@/contexts/QuestTrackingContext";
 
 interface CountryStatus {
   code: string;
@@ -35,6 +36,14 @@ const flagEmojis: Record<string, string> = {
 
 const MapPage = () => {
   const [selectedCountry, setSelectedCountry] = useState<CountryStatus | null>(null);
+  const { trackDailyQuest, isDailyQuestCompleted } = useQuestTracking();
+
+  // 追蹤探索地圖任務
+  useEffect(() => {
+    if (!isDailyQuestCompleted("view_map")) {
+      trackDailyQuest("view_map");
+    }
+  }, [trackDailyQuest, isDailyQuestCompleted]);
 
   const getStatusBadge = (country: CountryStatus) => {
     switch (country.status) {

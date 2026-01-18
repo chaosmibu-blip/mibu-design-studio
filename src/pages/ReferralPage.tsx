@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Copy, Share2, Check, Gift, Users, Sparkles, Trophy, User } from "lucide-react";
 import { useReferral } from "@/hooks/useReferral";
+import { useQuestTracking } from "@/contexts/QuestTrackingContext";
 
 const ReferralPage = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const ReferralPage = () => {
   const [inputCode, setInputCode] = useState("");
   const [copied, setCopied] = useState(false);
   const [applyResult, setApplyResult] = useState<{ success: boolean; message: string } | null>(null);
+  const { trackOneTimeQuest, isOneTimeQuestCompleted } = useQuestTracking();
 
   const handleCopy = async () => {
     const success = await copyReferralCode();
@@ -28,6 +30,11 @@ const ReferralPage = () => {
     setApplyResult(result);
     if (result.success) {
       setInputCode("");
+      
+      // 追蹤首次成功邀請
+      if (!isOneTimeQuestCompleted("first_referral")) {
+        trackOneTimeQuest("first_referral");
+      }
     }
   };
 

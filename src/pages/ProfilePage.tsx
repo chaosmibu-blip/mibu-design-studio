@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Camera, Check, Plus, X } from "lucide-react";
+import { useQuestTracking } from "@/contexts/QuestTrackingContext";
 import {
   Select,
   SelectContent,
@@ -57,6 +58,21 @@ const ProfilePage = () => {
   const [emergencyName, setEmergencyName] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
 
+  // 追蹤初始狀態
+  const initialNickname = useRef(nickname);
+  const initialAvatar = useRef(selectedAvatar);
+  const initialInterests = useRef(selectedInterests);
+
+  const { trackOneTimeQuest, isOneTimeQuestCompleted } = useQuestTracking();
+
+  // 追蹤偏好設定變更
+  useEffect(() => {
+    const hasChangedInterests = JSON.stringify(selectedInterests) !== JSON.stringify(initialInterests.current);
+    if (hasChangedInterests && !isOneTimeQuestCompleted("first_preferences")) {
+      trackOneTimeQuest("first_preferences");
+    }
+  }, [selectedInterests, trackOneTimeQuest, isOneTimeQuestCompleted]);
+
   const toggleInterest = (tag: string) => {
     setSelectedInterests((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
@@ -88,9 +104,19 @@ const ProfilePage = () => {
   const handleAvatarSelect = (avatarSrc: string) => {
     setSelectedAvatar(avatarSrc);
     setAvatarDialogOpen(false);
+    
+    // 追蹤首次更換頭像
+    if (avatarSrc !== initialAvatar.current && !isOneTimeQuestCompleted("first_avatar")) {
+      trackOneTimeQuest("first_avatar");
+    }
   };
 
   const handleSave = () => {
+    // 追蹤首次設定暱稱
+    if (nickname !== initialNickname.current && !isOneTimeQuestCompleted("first_profile")) {
+      trackOneTimeQuest("first_profile");
+    }
+    
     // Just show feedback in demo
     alert("個人資料已儲存！");
   };

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { useCollection } from "@/hooks/useCollection";
 import { usePurchase } from "@/hooks/usePurchase";
+import { useQuestTracking } from "@/contexts/QuestTrackingContext";
 import type { ItineraryItem, DaySchedule } from "@/types";
 import Icon from "@/components/ui/icon";
 
@@ -35,6 +36,7 @@ const ITINERARY_STORAGE_KEY = "mibu_itinerary";
 const Itinerary = () => {
   const { generateScheduleDates, days } = usePurchase();
   const { items: collectionItems } = useCollection();
+  const { trackOneTimeQuest, isOneTimeQuestCompleted } = useQuestTracking();
   
   const [schedules, setSchedules] = useState<DaySchedule[]>(() => {
     const stored = localStorage.getItem(ITINERARY_STORAGE_KEY);
@@ -99,6 +101,11 @@ const Itinerary = () => {
     saveSchedules(newSchedules);
     setSheetOpen(false);
     setSelectedItem(null);
+
+    // 追蹤首次建立行程
+    if (!isOneTimeQuestCompleted("first_itinerary")) {
+      trackOneTimeQuest("first_itinerary");
+    }
   };
 
   const handleDeleteItem = (itemId: string) => {

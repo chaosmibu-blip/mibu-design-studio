@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Map, MessageCircle, ChevronDown, Check, Calendar, ClipboardList } from "lucide-react";
@@ -6,6 +6,7 @@ import PlannerMap from "@/components/PlannerMap";
 import ChatRoom from "@/components/ChatRoom";
 import Itinerary from "@/components/Itinerary";
 import { usePurchase } from "@/hooks/usePurchase";
+import { useQuestTracking } from "@/contexts/QuestTrackingContext";
 import {
   Sheet,
   SheetContent,
@@ -49,6 +50,14 @@ const PlannerPage = () => {
   } = usePurchase();
   const [activeTab, setActiveTab] = useState<"map" | "chat">("map");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { trackDailyQuest, trackOneTimeQuest, isDailyQuestCompleted, isOneTimeQuestCompleted } = useQuestTracking();
+
+  // 追蹤查看行程任務
+  useEffect(() => {
+    if (!isDailyQuestCompleted("view_planner")) {
+      trackDailyQuest("view_planner");
+    }
+  }, [trackDailyQuest, isDailyQuestCompleted]);
   
   // Location selection state
   const [selectedCountry, setSelectedCountry] = useState<string>("");
@@ -68,6 +77,11 @@ const PlannerPage = () => {
     setStartDate(selectedStartDate);
     confirmPurchase();
     setSheetOpen(false);
+
+    // 追蹤首購任務
+    if (!isOneTimeQuestCompleted("first_purchase")) {
+      trackOneTimeQuest("first_purchase");
+    }
   };
 
   return (
