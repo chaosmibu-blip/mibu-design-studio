@@ -3,7 +3,7 @@ import PageLayout from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Lock, Check, Globe, ArrowLeft, ChevronRight } from "lucide-react";
+import { Lock, Check, Globe, ArrowLeft, ChevronRight, Flame, Sparkles } from "lucide-react";
 
 interface CountryStatus {
   code: string;
@@ -48,7 +48,7 @@ const MapPage = () => {
       case "funding":
         return (
           <span className="flex items-center gap-1 text-xs px-2.5 py-1 bg-amber-500/20 text-amber-600 rounded-full font-medium animate-pulse-soft">
-            🔥 募資中 {country.fundingProgress}%
+            <Flame className="w-3 h-3" /> 募資中 {country.fundingProgress}%
           </span>
         );
       case "coming_soon":
@@ -169,7 +169,7 @@ const MapPage = () => {
 
         {/* Support CTA */}
         <Card className="p-6 rounded-2xl border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 text-center space-y-3 shadow-soft animate-slide-up">
-          <h3 className="font-bold text-foreground text-lg">💝 支持我們的理念</h3>
+          <h3 className="font-bold text-foreground text-lg flex items-center justify-center gap-2"><Sparkles className="w-5 h-5 text-primary" /> 支持我們的理念</h3>
           <p className="text-sm text-muted">
             景點資料的收集與篩選需要大量人力成本，<br />
             您的支持將幫助我們解鎖更多國家！

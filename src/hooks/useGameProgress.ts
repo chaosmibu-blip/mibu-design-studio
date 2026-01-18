@@ -19,16 +19,16 @@ export interface LevelInfo {
 
 // 10 階段設計，每個階段有主題色和貓咪圖示
 export const LEVEL_TIERS: LevelTier[] = [
-  { tier: 1, name: "旅行萌新", minLevel: 1, maxLevel: 10, colorClass: "from-gray-400 to-gray-500", icon: "😺" },
-  { tier: 2, name: "好奇探索者", minLevel: 11, maxLevel: 20, colorClass: "from-emerald-400 to-emerald-600", icon: "🐱" },
-  { tier: 3, name: "積極冒險家", minLevel: 21, maxLevel: 30, colorClass: "from-blue-400 to-blue-600", icon: "😸" },
-  { tier: 4, name: "旅途達人", minLevel: 31, maxLevel: 40, colorClass: "from-purple-400 to-purple-600", icon: "😻" },
-  { tier: 5, name: "資深玩家", minLevel: 41, maxLevel: 50, colorClass: "from-amber-400 to-amber-600", icon: "🐈" },
-  { tier: 6, name: "旅遊專家", minLevel: 51, maxLevel: 60, colorClass: "from-orange-400 to-orange-600", icon: "😼" },
-  { tier: 7, name: "探索大師", minLevel: 61, maxLevel: 70, colorClass: "from-red-400 to-red-600", icon: "🦁" },
-  { tier: 8, name: "傳奇旅者", minLevel: 71, maxLevel: 80, colorClass: "from-pink-400 via-purple-500 to-indigo-500", icon: "👑" },
-  { tier: 9, name: "世界行者", minLevel: 81, maxLevel: 90, colorClass: "from-cyan-400 via-blue-500 to-purple-500", icon: "🌟" },
-  { tier: 10, name: "旅行之神", minLevel: 91, maxLevel: 99, colorClass: "from-yellow-300 via-amber-400 to-orange-500", icon: "✨" },
+  { tier: 1, name: "旅行萌新", minLevel: 1, maxLevel: 10, colorClass: "from-gray-400 to-gray-500", icon: "Sprout" },
+  { tier: 2, name: "好奇探索者", minLevel: 11, maxLevel: 20, colorClass: "from-emerald-400 to-emerald-600", icon: "Compass" },
+  { tier: 3, name: "積極冒險家", minLevel: 21, maxLevel: 30, colorClass: "from-blue-400 to-blue-600", icon: "Map" },
+  { tier: 4, name: "旅途達人", minLevel: 31, maxLevel: 40, colorClass: "from-purple-400 to-purple-600", icon: "Backpack" },
+  { tier: 5, name: "資深玩家", minLevel: 41, maxLevel: 50, colorClass: "from-amber-400 to-amber-600", icon: "Trophy" },
+  { tier: 6, name: "旅遊專家", minLevel: 51, maxLevel: 60, colorClass: "from-orange-400 to-orange-600", icon: "Globe" },
+  { tier: 7, name: "探索大師", minLevel: 61, maxLevel: 70, colorClass: "from-red-400 to-red-600", icon: "Mountain" },
+  { tier: 8, name: "傳奇旅者", minLevel: 71, maxLevel: 80, colorClass: "from-pink-400 via-purple-500 to-indigo-500", icon: "Crown" },
+  { tier: 9, name: "世界行者", minLevel: 81, maxLevel: 90, colorClass: "from-cyan-400 via-blue-500 to-purple-500", icon: "Plane" },
+  { tier: 10, name: "旅行之神", minLevel: 91, maxLevel: 99, colorClass: "from-yellow-300 via-amber-400 to-orange-500", icon: "Sparkles" },
 ];
 
 // 經驗值曲線公式: XP = Math.floor(40 * (level ^ 1.4) + 10)

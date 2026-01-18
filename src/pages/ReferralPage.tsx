@@ -4,7 +4,7 @@ import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Copy, Share2, Check, Gift, Users, Sparkles, Trophy } from "lucide-react";
+import { ArrowLeft, Copy, Share2, Check, Gift, Users, Sparkles, Trophy, User } from "lucide-react";
 import { useReferral } from "@/hooks/useReferral";
 
 const ReferralPage = () => {
@@ -33,11 +33,11 @@ const ReferralPage = () => {
 
   // Mock 排行榜數據
   const leaderboard = [
-    { rank: 1, name: "旅行達人小明", count: 28, avatar: "😎" },
-    { rank: 2, name: "冒險家阿華", count: 22, avatar: "🤠" },
-    { rank: 3, name: "探索者小美", count: 18, avatar: "🥳" },
-    { rank: 4, name: "玩家小王", count: 15, avatar: "😊" },
-    { rank: 5, name: "新手旅人", count: 12, avatar: "🙂" },
+    { rank: 1, name: "旅行達人小明", count: 28 },
+    { rank: 2, name: "冒險家阿華", count: 22 },
+    { rank: 3, name: "探索者小美", count: 18 },
+    { rank: 4, name: "玩家小王", count: 15 },
+    { rank: 5, name: "新手旅人", count: 12 },
   ];
 
   return (
@@ -134,7 +134,7 @@ const ReferralPage = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl">
                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  👤
+                  <User className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">推薦人獎勵</p>
@@ -148,7 +148,7 @@ const ReferralPage = () => {
               
               <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl">
                 <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
-                  🎁
+                  <Gift className="w-5 h-5 text-accent" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-foreground">被推薦人獎勵</p>
@@ -232,7 +232,9 @@ const ReferralPage = () => {
                   }`}>
                     {user.rank}
                   </div>
-                  <span className="text-xl">{user.avatar}</span>
+                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                    <User className="w-4 h-4 text-muted" />
+                  </div>
                   <span className="flex-1 text-sm font-medium text-foreground truncate">
                     {user.name}
                   </span>

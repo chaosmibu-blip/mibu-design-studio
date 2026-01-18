@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, Clock, MapPin, Plus, ChevronLeft, ChevronRight, Trash2, Edit2, Search, X } from "lucide-react";
+import { Calendar, Clock, MapPin, Plus, ChevronLeft, ChevronRight, Trash2, Edit2, Search, X, Utensils, Hotel, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,13 +10,14 @@ import {
 import { useCollection } from "@/hooks/useCollection";
 import { usePurchase } from "@/hooks/usePurchase";
 import type { ItineraryItem, DaySchedule } from "@/types";
+import Icon from "@/components/ui/icon";
 
-const getCategoryIcon = (category: string) => {
+const getCategoryIconName = (category: string) => {
   switch (category) {
-    case "美食": return "🍜";
-    case "住宿": return "🏨";
-    case "遊程體驗": return "🎯";
-    default: return "📍";
+    case "美食": return "Utensils";
+    case "住宿": return "Hotel";
+    case "遊程體驗": return "Target";
+    default: return "MapPin";
   }
 };
 
@@ -172,7 +173,7 @@ const Itinerary = () => {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">{getCategoryIcon(item.category)}</span>
+                      <Icon name={getCategoryIconName(item.category)} className="w-5 h-5 text-primary" />
                       <h3 className="font-medium text-foreground">{item.title}</h3>
                     </div>
                     <span className={`inline-block text-xs px-2 py-0.5 rounded-full border ${getCategoryColor(item.category)}`}>{item.category}</span>
@@ -211,7 +212,7 @@ const Itinerary = () => {
                   <button key={index} onClick={() => setSelectedItem(item)}
                     className="w-full p-4 bg-card rounded-xl border border-border text-left hover:bg-secondary/50 transition-colors active:scale-[0.98] shadow-soft">
                     <div className="flex items-center gap-3">
-                      <span className="text-xl">{getCategoryIcon(item.category)}</span>
+                      <Icon name={getCategoryIconName(item.category)} className="w-6 h-6 text-primary" />
                       <div className="flex-1">
                         <p className="font-medium text-foreground">{item.title}</p>
                         <p className="text-xs text-muted">{item.county} · {item.category}</p>
@@ -225,7 +226,7 @@ const Itinerary = () => {
             <div className="section-spacing">
               <div className="p-4 bg-secondary rounded-xl">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{getCategoryIcon(selectedItem.category)}</span>
+                  <Icon name={getCategoryIconName(selectedItem.category)} className="w-7 h-7 text-primary" />
                   <div><p className="font-bold text-foreground">{selectedItem.title}</p><p className="text-sm text-muted">{selectedItem.county}</p></div>
                 </div>
               </div>

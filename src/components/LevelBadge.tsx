@@ -1,4 +1,5 @@
 import { getTierForLevel, LevelTier } from "@/hooks/useGameProgress";
+import Icon from "@/components/ui/icon";
 
 interface LevelBadgeProps {
   level: number;
@@ -71,8 +72,8 @@ const LevelBadge = ({ level, size = "md", showName = true, showIcon = true }: Le
           
           {/* 階段圖示 */}
           {showIcon && (
-            <span className={`relative z-10 leading-none ${iconSizeClasses[size]}`}>
-              {tier.icon}
+            <span className="relative z-10 leading-none">
+              <Icon name={tier.icon} className={`${size === "sm" ? "w-3 h-3" : size === "md" ? "w-4 h-4" : size === "lg" ? "w-5 h-5" : "w-6 h-6"}`} />
             </span>
           )}
         </div>
