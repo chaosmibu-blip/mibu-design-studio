@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Globe, ExternalLink, Apple } from "lucide-react";
 import mibuLogo from "@/assets/mibu-logo.jpeg";
 
 const LoginPage = () => {
@@ -15,7 +16,7 @@ const LoginPage = () => {
           <span className="text-xl font-bold text-foreground tracking-widest">MIBU</span>
         </div>
         <button className="w-10 h-10 rounded-full border border-border flex items-center justify-center">
-          <span className="text-lg">🌐</span>
+          <Globe className="w-5 h-5 text-foreground" />
         </button>
       </div>
 
@@ -38,7 +39,7 @@ const LoginPage = () => {
             className="w-full h-14 text-base font-medium rounded-full bg-primary hover:bg-primary/90 text-primary-foreground btn-press"
             onClick={() => window.location.href = "/home"}
           >
-            <span className="mr-2">↗</span>
+            <ExternalLink className="w-4 h-4 mr-2" />
             Google 登入
           </Button>
 
@@ -46,7 +47,7 @@ const LoginPage = () => {
             className="w-full h-14 text-base font-medium rounded-full bg-foreground hover:bg-foreground/90 text-background btn-press"
             onClick={() => window.location.href = "/home"}
           >
-            <span className="mr-2"></span>
+            <Apple className="w-4 h-4 mr-2" />
             使用 Apple 登入
           </Button>
 
