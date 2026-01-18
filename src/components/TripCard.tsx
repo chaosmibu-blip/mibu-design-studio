@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MapPin, Plus, X, Heart, Ban } from "lucide-react";
 
 interface TripCardProps {
@@ -63,6 +63,21 @@ const TripCard = ({
   showActions = false
 }: TripCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const actionRef = useRef<HTMLDivElement>(null);
+
+  // 點擊外部區域自動收合
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (actionRef.current && !actionRef.current.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isExpanded]);
   const { currentLevel, nextLevel, progress, remaining } = getLevelInfo(checkInCount);
   
   // 根據等級決定邊框樣式 - 純用視覺呈現
@@ -126,7 +141,7 @@ const TripCard = ({
     <div className="relative">
       {/* 展開式按鈕區域 */}
       {showActions && (
-        <div className="absolute top-3 right-3 z-10">
+        <div ref={actionRef} className="absolute top-3 right-3 z-10">
           {/* 愛心按鈕 - 往上彈出 (在卡片外側) */}
           <button
             onClick={handleToggleFavorite}
