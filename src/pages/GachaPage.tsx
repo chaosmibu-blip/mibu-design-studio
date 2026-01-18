@@ -229,10 +229,10 @@ const GachaPage = () => {
                       className="w-14 h-14 mx-auto mb-3 object-contain rounded-xl shadow-soft"
                     />
                     <span className="text-sm font-bold text-foreground tracking-widest">MIBU</span>
-                    <h2 className="text-2xl font-bold text-foreground mt-2">{selectedCounty}</h2>
-                    <p className="text-sm text-muted">
+                    <p className="text-sm text-muted mt-2">
                       正在探索 <span className="text-primary font-medium">{selectedCountry}</span>
                     </p>
+                    <h2 className="text-2xl font-bold text-foreground mt-1">{selectedCounty}</h2>
                   </div>
 
                   {/* Main area map link */}
