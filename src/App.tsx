@@ -14,6 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import MapPage from "./pages/MapPage";
 import AchievementsPage from "./pages/AchievementsPage";
 import PlannerPage from "./pages/PlannerPage";
+import ReferralPage from "./pages/ReferralPage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/achievements" element={<AchievementsPage />} />
+          <Route path="/referral" element={<ReferralPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

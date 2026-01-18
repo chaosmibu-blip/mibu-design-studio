@@ -1,23 +1,76 @@
 import { useState, useCallback, useMemo } from "react";
 
-export interface LevelInfo {
-  level: number;
+export interface LevelTier {
+  tier: number;
   name: string;
-  minXP: number;
-  reward: string;
+  minLevel: number;
+  maxLevel: number;
+  colorClass: string;
+  icon: string;
 }
 
-export const LEVEL_CONFIG: LevelInfo[] = [
-  { level: 1, name: "新手旅人", minXP: 0, reward: "基礎功能" },
-  { level: 2, name: "初階探險家", minXP: 100, reward: "圖鑑容量 +5" },
-  { level: 3, name: "中階冒險者", minXP: 300, reward: "專屬徽章" },
-  { level: 4, name: "高階旅行家", minXP: 600, reward: "道具箱容量 +5" },
-  { level: 5, name: "資深導遊", minXP: 1000, reward: "VIP 推薦" },
-  { level: 6, name: "旅遊達人", minXP: 1500, reward: "專屬頭像框" },
-  { level: 7, name: "探索大師", minXP: 2200, reward: "抽獎機會" },
-  { level: 8, name: "傳奇旅者", minXP: 3000, reward: "全部解鎖" },
+export interface LevelInfo {
+  level: number;
+  tierName: string;
+  tier: LevelTier;
+  xpForCurrentLevel: number;
+  xpForNextLevel: number;
+}
+
+// 10 階段設計，每個階段有主題色和貓咪圖示
+export const LEVEL_TIERS: LevelTier[] = [
+  { tier: 1, name: "旅行萌新", minLevel: 1, maxLevel: 10, colorClass: "from-gray-400 to-gray-500", icon: "😺" },
+  { tier: 2, name: "好奇探索者", minLevel: 11, maxLevel: 20, colorClass: "from-emerald-400 to-emerald-600", icon: "🐱" },
+  { tier: 3, name: "積極冒險家", minLevel: 21, maxLevel: 30, colorClass: "from-blue-400 to-blue-600", icon: "😸" },
+  { tier: 4, name: "旅途達人", minLevel: 31, maxLevel: 40, colorClass: "from-purple-400 to-purple-600", icon: "😻" },
+  { tier: 5, name: "資深玩家", minLevel: 41, maxLevel: 50, colorClass: "from-amber-400 to-amber-600", icon: "🐈" },
+  { tier: 6, name: "旅遊專家", minLevel: 51, maxLevel: 60, colorClass: "from-orange-400 to-orange-600", icon: "😼" },
+  { tier: 7, name: "探索大師", minLevel: 61, maxLevel: 70, colorClass: "from-red-400 to-red-600", icon: "🦁" },
+  { tier: 8, name: "傳奇旅者", minLevel: 71, maxLevel: 80, colorClass: "from-pink-400 via-purple-500 to-indigo-500", icon: "👑" },
+  { tier: 9, name: "世界行者", minLevel: 81, maxLevel: 90, colorClass: "from-cyan-400 via-blue-500 to-purple-500", icon: "🌟" },
+  { tier: 10, name: "旅行之神", minLevel: 91, maxLevel: 99, colorClass: "from-yellow-300 via-amber-400 to-orange-500", icon: "✨" },
 ];
 
+// 經驗值曲線公式: XP = Math.floor(40 * (level ^ 1.4) + 10)
+export const calculateXPForLevel = (level: number): number => {
+  if (level <= 1) return 0;
+  return Math.floor(40 * Math.pow(level, 1.4) + 10);
+};
+
+// 計算累計經驗值
+export const calculateTotalXPForLevel = (level: number): number => {
+  let total = 0;
+  for (let i = 2; i <= level; i++) {
+    total += calculateXPForLevel(i);
+  }
+  return total;
+};
+
+// 根據經驗值計算等級
+export const calculateLevelFromXP = (totalXP: number): number => {
+  let level = 1;
+  let xpNeeded = 0;
+  
+  while (level < 99) {
+    xpNeeded += calculateXPForLevel(level + 1);
+    if (totalXP < xpNeeded) break;
+    level++;
+  }
+  
+  return Math.min(level, 99);
+};
+
+// 獲取等級所屬階段
+export const getTierForLevel = (level: number): LevelTier => {
+  for (const tier of LEVEL_TIERS) {
+    if (level >= tier.minLevel && level <= tier.maxLevel) {
+      return tier;
+    }
+  }
+  return LEVEL_TIERS[LEVEL_TIERS.length - 1];
+};
+
+// 經驗值獲取行為
 export interface XPAction {
   type: string;
   label: string;
@@ -25,14 +78,27 @@ export interface XPAction {
 }
 
 export const XP_ACTIONS: XPAction[] = [
-  { type: "daily_login", label: "每日登入", xp: 10 },
-  { type: "gacha", label: "完成扭蛋", xp: 5 },
+  { type: "daily_login", label: "每日簽到", xp: 15 },
+  { type: "gacha", label: "完成扭蛋", xp: 10 },
+  { type: "view_collection", label: "瀏覽圖鑑", xp: 5 },
+  { type: "send_message", label: "分享心情", xp: 5 },
+  { type: "view_map", label: "探索地圖", xp: 5 },
+  { type: "daily_complete", label: "每日全勤", xp: 30 },
   { type: "checkin", label: "打卡簽到", xp: 20 },
   { type: "trip_complete", label: "完成行程", xp: 50 },
   { type: "achievement", label: "解鎖成就", xp: 30 },
   { type: "referral", label: "推薦好友成功", xp: 50 },
   { type: "referred", label: "被推薦註冊", xp: 30 },
   { type: "purchase", label: "購買行程", xp: 100 },
+  { type: "first_gacha", label: "初次探索", xp: 50 },
+  { type: "first_profile", label: "建立檔案", xp: 30 },
+  { type: "first_avatar", label: "頭像達人", xp: 15 },
+  { type: "first_message", label: "社交蝴蝶", xp: 20 },
+  { type: "first_purchase", label: "首購達成", xp: 150 },
+  { type: "first_checkin", label: "打卡新星", xp: 30 },
+  { type: "streak_7", label: "連續7天登入", xp: 50 },
+  { type: "streak_30", label: "連續30天登入", xp: 150 },
+  { type: "streak_100", label: "連續100天登入", xp: 400 },
 ];
 
 interface GameProgress {
@@ -42,11 +108,11 @@ interface GameProgress {
   lastLoginDate: string;
 }
 
-// Mock initial data
+// Mock initial data - 模擬用戶已有一些經驗值
 const initialProgress: GameProgress = {
-  currentXP: 245,
-  totalXP: 245,
-  dailyLoginStreak: 3,
+  currentXP: 580,
+  totalXP: 580,
+  dailyLoginStreak: 5,
   lastLoginDate: new Date().toISOString().split('T')[0],
 };
 
@@ -54,35 +120,40 @@ export const useGameProgress = () => {
   const [progress, setProgress] = useState<GameProgress>(initialProgress);
 
   const currentLevel = useMemo(() => {
-    let level = LEVEL_CONFIG[0];
-    for (const config of LEVEL_CONFIG) {
-      if (progress.currentXP >= config.minXP) {
-        level = config;
-      } else {
-        break;
-      }
-    }
-    return level;
+    return calculateLevelFromXP(progress.currentXP);
   }, [progress.currentXP]);
 
-  const nextLevel = useMemo(() => {
-    const currentIndex = LEVEL_CONFIG.findIndex(l => l.level === currentLevel.level);
-    return currentIndex < LEVEL_CONFIG.length - 1 
-      ? LEVEL_CONFIG[currentIndex + 1] 
-      : null;
+  const currentTier = useMemo(() => {
+    return getTierForLevel(currentLevel);
+  }, [currentLevel]);
+
+  const xpInCurrentLevel = useMemo(() => {
+    const xpForCurrentLevel = calculateTotalXPForLevel(currentLevel);
+    return progress.currentXP - xpForCurrentLevel;
+  }, [progress.currentXP, currentLevel]);
+
+  const xpNeededForNextLevel = useMemo(() => {
+    if (currentLevel >= 99) return 0;
+    return calculateXPForLevel(currentLevel + 1);
   }, [currentLevel]);
 
   const progressToNextLevel = useMemo(() => {
-    if (!nextLevel) return 100;
-    const xpInCurrentLevel = progress.currentXP - currentLevel.minXP;
-    const xpNeededForNextLevel = nextLevel.minXP - currentLevel.minXP;
+    if (currentLevel >= 99) return 100;
     return Math.min(100, (xpInCurrentLevel / xpNeededForNextLevel) * 100);
-  }, [progress.currentXP, currentLevel, nextLevel]);
+  }, [xpInCurrentLevel, xpNeededForNextLevel, currentLevel]);
 
   const xpToNextLevel = useMemo(() => {
-    if (!nextLevel) return 0;
-    return nextLevel.minXP - progress.currentXP;
-  }, [progress.currentXP, nextLevel]);
+    if (currentLevel >= 99) return 0;
+    return xpNeededForNextLevel - xpInCurrentLevel;
+  }, [xpNeededForNextLevel, xpInCurrentLevel, currentLevel]);
+
+  const levelInfo = useMemo((): LevelInfo => ({
+    level: currentLevel,
+    tierName: currentTier.name,
+    tier: currentTier,
+    xpForCurrentLevel: xpInCurrentLevel,
+    xpForNextLevel: xpNeededForNextLevel,
+  }), [currentLevel, currentTier, xpInCurrentLevel, xpNeededForNextLevel]);
 
   const addXP = useCallback((amount: number, actionType?: string) => {
     setProgress(prev => ({
@@ -91,7 +162,6 @@ export const useGameProgress = () => {
       totalXP: prev.totalXP + amount,
     }));
     
-    // Could trigger level up notification here
     return amount;
   }, []);
 
@@ -103,29 +173,48 @@ export const useGameProgress = () => {
 
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     const isConsecutive = progress.lastLoginDate === yesterday;
+    const newStreak = isConsecutive ? progress.dailyLoginStreak + 1 : 1;
+
+    // 連續登入獎勵
+    let bonusXP = 15; // 基礎簽到
+    let bonusMessage = "";
+    
+    if (newStreak === 7) {
+      bonusXP += 50;
+      bonusMessage = " + 連續7天獎勵 +50 XP！";
+    } else if (newStreak === 30) {
+      bonusXP += 150;
+      bonusMessage = " + 連續30天獎勵 +150 XP！";
+    } else if (newStreak === 100) {
+      bonusXP += 400;
+      bonusMessage = " + 連續100天獎勵 +400 XP！";
+    }
 
     setProgress(prev => ({
       ...prev,
-      currentXP: prev.currentXP + 10,
-      totalXP: prev.totalXP + 10,
-      dailyLoginStreak: isConsecutive ? prev.dailyLoginStreak + 1 : 1,
+      currentXP: prev.currentXP + bonusXP,
+      totalXP: prev.totalXP + bonusXP,
+      dailyLoginStreak: newStreak,
       lastLoginDate: today,
     }));
 
     return { 
       success: true, 
-      message: `簽到成功！+10 經驗值${isConsecutive ? `，連續 ${progress.dailyLoginStreak + 1} 天！` : ''}` 
+      message: `簽到成功！+${bonusXP} 經驗值，連續 ${newStreak} 天！${bonusMessage}` 
     };
   }, [progress]);
 
   return {
     progress,
     currentLevel,
-    nextLevel,
+    currentTier,
+    levelInfo,
     progressToNextLevel,
     xpToNextLevel,
+    xpInCurrentLevel,
+    xpNeededForNextLevel,
     addXP,
     claimDailyLogin,
-    LEVEL_CONFIG,
+    LEVEL_TIERS,
   };
 };
