@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Gift, Ticket, Star, AlertTriangle, Check, Trash2, Timer, CheckCircle } from "lucide-react";
+import { useQuestTracking } from "@/contexts/QuestTrackingContext";
 import {
   Dialog,
   DialogContent,
@@ -95,6 +96,7 @@ const ItemBox = () => {
   const [redeemCode, setRedeemCode] = useState("");
   const [redeemError, setRedeemError] = useState(false);
   const [redeemSuccess, setRedeemSuccess] = useState(false);
+  const { trackOneTimeQuest, isOneTimeQuestCompleted } = useQuestTracking();
 
   // Count unique items (each item = 1 slot)
   const usedSlots = items.length;
@@ -189,6 +191,11 @@ const ItemBox = () => {
     if (redeemCode === correctCode) {
       setRedeemSuccess(true);
       setRedeemError(false);
+      
+      // 追蹤首次使用道具
+      if (!isOneTimeQuestCompleted("first_item_use")) {
+        trackOneTimeQuest("first_item_use");
+      }
       
       // 標記為已核銷，設定自動刪除時間
       const now = new Date();

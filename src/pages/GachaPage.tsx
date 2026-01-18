@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -6,6 +6,7 @@ import TripCard from "@/components/TripCard";
 import ItemBox from "@/components/ItemBox";
 import CollectionContent from "@/components/CollectionContent";
 import { useCollection } from "@/hooks/useCollection";
+import { useQuestTracking } from "@/contexts/QuestTrackingContext";
 import { TabBar } from "@/components/ui/tab-bar";
 import { ChevronDown, Check, MapPin } from "lucide-react";
 import mibuLogo from "@/assets/mibu-logo.jpeg";
@@ -48,6 +49,14 @@ const GachaPage = () => {
   const [animatingCount, setAnimatingCount] = useState(false);
 
   const { addMultipleToCollection } = useCollection();
+  const { trackDailyQuest, trackOneTimeQuest, isDailyQuestCompleted, isOneTimeQuestCompleted } = useQuestTracking();
+
+  // 追蹤瀏覽圖鑑
+  useEffect(() => {
+    if (activeTab === "collection" && !isDailyQuestCompleted("view_collection")) {
+      trackDailyQuest("view_collection");
+    }
+  }, [activeTab, trackDailyQuest, isDailyQuestCompleted]);
 
   const handleGachaCountChange = (value: number[]) => {
     setAnimatingCount(true);
@@ -71,6 +80,16 @@ const GachaPage = () => {
       duration: result.duration,
     }));
     addMultipleToCollection(itemsToAdd);
+
+    // 追蹤每日扭蛋任務
+    if (!isDailyQuestCompleted("daily_gacha")) {
+      trackDailyQuest("daily_gacha");
+    }
+
+    // 追蹤首次扭蛋（一次性任務）
+    if (!isOneTimeQuestCompleted("first_gacha")) {
+      trackOneTimeQuest("first_gacha");
+    }
   };
 
   const handleMapClick = (title: string) => {
@@ -214,9 +233,6 @@ const GachaPage = () => {
                     <p className="text-sm text-muted">
                       正在探索 <span className="text-primary font-medium">{selectedCountry}</span>
                     </p>
-                    <p className="text-sm text-primary mt-2 font-medium">
-                      ✨ 已自動收藏 {currentResults.length} 個地點到圖鑑
-                    </p>
                   </div>
 
                   {/* Main area map link */}
@@ -256,7 +272,7 @@ const GachaPage = () => {
                     size="lg"
                     className="w-full h-14 text-base font-bold rounded-2xl shadow-medium"
                   >
-                    重新扭蛋 🔄
+                    重新扭蛋
                   </Button>
                 </div>
               )}
