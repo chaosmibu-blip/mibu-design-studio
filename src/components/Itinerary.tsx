@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, Clock, MapPin, Plus, ChevronLeft, ChevronRight, Trash2, Edit2, Search, X, Utensils, Hotel, Target } from "lucide-react";
+import { Calendar, Clock, MapPin, Plus, ChevronLeft, ChevronRight, Trash2, Edit2, Search, X, Utensils, Hotel, Target, CalendarX, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -111,7 +111,7 @@ const Itinerary = () => {
   if (currentSchedules.length === 0) {
     return (
       <div className="text-center py-12 animate-fade-in">
-        <div className="text-4xl mb-4">📅</div>
+        <CalendarX className="w-12 h-12 mx-auto mb-4 text-muted" />
         <p className="text-muted">尚未購買旅程策劃服務</p>
         <p className="text-sm text-muted mt-1">購買後即可開始規劃行程</p>
       </div>
@@ -150,7 +150,7 @@ const Itinerary = () => {
 
       {currentSchedule.items.length === 0 && (
         <div className="text-center py-8">
-          <div className="text-3xl mb-3">📝</div>
+          <ClipboardList className="w-10 h-10 mx-auto mb-3 text-muted" />
           <p className="text-muted">這天還沒有行程</p>
         </div>
       )}

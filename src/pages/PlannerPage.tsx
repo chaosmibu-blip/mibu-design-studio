@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Map, MessageCircle, ChevronDown, Check, Calendar } from "lucide-react";
+import { Map, MessageCircle, ChevronDown, Check, Calendar, ClipboardList } from "lucide-react";
 import PlannerMap from "@/components/PlannerMap";
 import ChatRoom from "@/components/ChatRoom";
 import Itinerary from "@/components/Itinerary";
@@ -93,9 +93,10 @@ const PlannerPage = () => {
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
                 <button
-                  className="flex-1 py-4 text-sm font-medium transition-all relative flex items-center justify-center gap-1 text-primary"
+                  className="flex-1 py-4 text-sm font-medium transition-all relative flex items-center justify-center gap-1.5 text-primary"
                 >
-                  📋 {isPurchased ? "我的行程表" : "建立行程"}
+                  <ClipboardList className="w-4 h-4" />
+                  {isPurchased ? "我的行程表" : "建立行程"}
                   <ChevronDown className="w-4 h-4" />
                 </button>
               </SheetTrigger>
@@ -132,7 +133,7 @@ const PlannerPage = () => {
                                 : 'bg-card border border-border text-foreground hover:bg-secondary'
                             }`}
                           >
-                            🇹🇼 {country.name}
+                            {country.name}
                           </button>
                         ))}
                       </div>
