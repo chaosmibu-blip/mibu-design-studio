@@ -164,7 +164,10 @@ const SettingsPage = () => {
         <div className="space-y-2 animate-slide-up" style={{ animationDelay: "0.4s" }}>
           <h2 className="text-sm font-medium text-muted px-1">帳號管理</h2>
           <Card className="rounded-2xl border-border overflow-hidden shadow-soft">
-            <button className="w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-all duration-200 border-b border-border btn-press">
+            <button 
+              onClick={() => navigate("/")}
+              className="w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-all duration-200 border-b border-border btn-press"
+            >
               <div className="w-11 h-11 bg-accent/20 rounded-xl flex items-center justify-center">
                 <LogOut className="w-5 h-5 text-accent" />
               </div>
