@@ -195,7 +195,7 @@ const GachaPage = () => {
                   <Button
                     onClick={handleGacha}
                     size="lg"
-                    className="w-full h-16 text-lg font-bold rounded-2xl shadow-medium hover:shadow-elevated animate-pulse-soft"
+                    className="w-full h-16 text-lg font-bold rounded-2xl shadow-elevated bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300"
                   >
                     開始扭蛋！
                   </Button>

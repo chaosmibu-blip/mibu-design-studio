@@ -214,7 +214,7 @@ const ChatRoom = () => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="輸入訊息..."
-            className="flex-1 bg-secondary rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className="flex-1 bg-white dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary border border-border"
           />
           <Button size="icon" className="rounded-full bg-primary flex-shrink-0">
             <Send className="w-4 h-4" />

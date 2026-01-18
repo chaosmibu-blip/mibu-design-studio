@@ -11,11 +11,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import mibuHoodie from "@/assets/mibu-hoodie.jpeg";
+import mibuLogo from "@/assets/mibu-logo.jpeg";
+import mibuPeek from "@/assets/mibu-peek.jpeg";
+import mibuOveralls from "@/assets/mibu-overalls.jpeg";
+import mibuCollection1 from "@/assets/mibu-collection-1.png";
+import mibuCollection2 from "@/assets/mibu-collection-2.png";
 
 const interestTags = [
   "美食", "景點", "購物", "文化", "自然", "藝術", 
   "歷史", "冒險", "放鬆", "攝影", "夜生活", "建築"
+];
+
+const avatarOptions = [
+  { id: "hoodie", src: mibuHoodie, name: "帽T貓" },
+  { id: "logo", src: mibuLogo, name: "經典貓" },
+  { id: "peek", src: mibuPeek, name: "偷看貓" },
+  { id: "overalls", src: mibuOveralls, name: "吊帶貓" },
+  { id: "collection1", src: mibuCollection1, name: "收藏貓1" },
+  { id: "collection2", src: mibuCollection2, name: "收藏貓2" },
 ];
 
 const ProfilePage = () => {
@@ -24,6 +44,8 @@ const ProfilePage = () => {
   const [gender, setGender] = useState("");
   const [birthday, setBirthday] = useState("1990-01-01");
   const [selectedInterests, setSelectedInterests] = useState<string[]>(["美食", "景點", "攝影"]);
+  const [selectedAvatar, setSelectedAvatar] = useState(mibuHoodie);
+  const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   
   // Custom input fields
   const [taboos, setTaboos] = useState<string[]>([]);
@@ -63,6 +85,11 @@ const ProfilePage = () => {
     setMedicalHistory(prev => prev.filter(m => m !== item));
   };
 
+  const handleAvatarSelect = (avatarSrc: string) => {
+    setSelectedAvatar(avatarSrc);
+    setAvatarDialogOpen(false);
+  };
+
   const handleSave = () => {
     // Just show feedback in demo
     alert("個人資料已儲存！");
@@ -84,20 +111,58 @@ const ProfilePage = () => {
 
         {/* Avatar section */}
         <div className="flex flex-col items-center gap-4 animate-slide-up">
-          <div className="relative">
-            <div className="w-28 h-28 rounded-full bg-secondary border-4 border-card shadow-medium overflow-hidden">
+          <button 
+            onClick={() => setAvatarDialogOpen(true)}
+            className="relative group"
+          >
+            <div className="w-28 h-28 rounded-full bg-secondary border-4 border-card shadow-medium overflow-hidden transition-transform duration-200 group-hover:scale-105">
               <img
-                src={mibuHoodie}
+                src={selectedAvatar}
                 alt="頭像"
                 className="w-full h-full object-cover"
               />
             </div>
-            <button className="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-medium btn-press">
+            <div className="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-medium btn-press">
               <Camera className="w-4 h-4 text-primary-foreground" />
-            </button>
-          </div>
+            </div>
+          </button>
           <p className="text-sm text-muted">點擊更換頭像</p>
         </div>
+
+        {/* Avatar selection dialog */}
+        <Dialog open={avatarDialogOpen} onOpenChange={setAvatarDialogOpen}>
+          <DialogContent className="max-w-sm mx-4 rounded-2xl shadow-elevated">
+            <DialogHeader>
+              <DialogTitle>選擇頭像</DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-3 gap-3 py-4">
+              {avatarOptions.map((avatar) => (
+                <button
+                  key={avatar.id}
+                  onClick={() => handleAvatarSelect(avatar.src)}
+                  className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105 ${
+                    selectedAvatar === avatar.src
+                      ? "border-primary ring-2 ring-primary/30"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <img
+                    src={avatar.src}
+                    alt={avatar.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {selectedAvatar === avatar.src && (
+                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center animate-scale-in">
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <Check className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Basic info */}
         <Card className="rounded-2xl border-border shadow-soft animate-slide-up" style={{ animationDelay: "0.1s" }}>

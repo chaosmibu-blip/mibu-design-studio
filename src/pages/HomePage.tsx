@@ -1,6 +1,10 @@
 import PageLayout from "@/components/layout/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, PartyPopper, Megaphone } from "lucide-react";
+import { Sparkles, PartyPopper, Megaphone, ChevronRight } from "lucide-react";
+import LevelBadge from "@/components/LevelBadge";
+import ExperienceBar from "@/components/ExperienceBar";
+import { useGameProgress } from "@/hooks/useGameProgress";
+import { useNavigate } from "react-router-dom";
 
 const announcements = [
   {
@@ -27,6 +31,9 @@ const announcements = [
 ];
 
 const HomePage = () => {
+  const navigate = useNavigate();
+  const { progress, currentLevel, nextLevel, progressToNextLevel, xpToNextLevel } = useGameProgress();
+
   return (
     <PageLayout>
       <div className="page-padding pt-6 section-spacing pb-8">
@@ -39,6 +46,34 @@ const HomePage = () => {
             今天想去哪裡探索？
           </p>
         </div>
+
+        {/* Level & XP Card */}
+        <Card 
+          className="rounded-2xl border-border shadow-soft overflow-hidden animate-slide-up cursor-pointer hover:shadow-medium transition-shadow"
+          onClick={() => navigate("/achievements")}
+        >
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <LevelBadge 
+                level={currentLevel.level} 
+                name={currentLevel.name}
+                size="md"
+              />
+              <ChevronRight className="w-5 h-5 text-muted" />
+            </div>
+            <ExperienceBar
+              currentXP={progress.currentXP}
+              nextLevelXP={nextLevel?.minXP ?? null}
+              progress={progressToNextLevel}
+              size="md"
+            />
+            {nextLevel && (
+              <p className="text-xs text-muted mt-2">
+                🎁 下一等級獎勵：<span className="text-primary font-medium">{nextLevel.reward}</span>
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Announcements */}
         <div className="space-y-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
@@ -68,7 +103,7 @@ const HomePage = () => {
         {/* Flash Events - with special styling */}
         <div className="space-y-3 animate-slide-up" style={{ animationDelay: "0.2s" }}>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-accent animate-pulse-soft" />
+            <Sparkles className="w-5 h-5 text-accent" />
             <h2 className="text-xl font-semibold text-foreground">快閃活動</h2>
           </div>
           {announcements.filter(a => a.type === "快閃").map((announcement) => (
@@ -78,7 +113,7 @@ const HomePage = () => {
             >
               <CardHeader className="pb-3 pt-5 px-5">
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-accent animate-pulse-soft" />
+                  <Sparkles className="w-4 h-4 text-accent" />
                   {announcement.title}
                 </CardTitle>
               </CardHeader>
