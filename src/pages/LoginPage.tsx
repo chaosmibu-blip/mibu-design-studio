@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Globe, ExternalLink, Apple, Store, User } from "lucide-react";
+import { Globe, ExternalLink, Apple, Store, User, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import mibuLogo from "@/assets/mibu-logo.jpeg";
 
 type UserType = "consumer" | "merchant";
 
 const LoginPage = () => {
   const [userType, setUserType] = useState<UserType>("consumer");
-
-  const toggleUserType = () => {
-    setUserType(prev => prev === "consumer" ? "merchant" : "consumer");
-  };
 
   const handleLogin = (method: string) => {
     if (userType === "consumer") {
@@ -37,49 +39,36 @@ const LoginPage = () => {
         </button>
       </div>
 
-      {/* Switch user type button */}
+      {/* Switch user type dropdown */}
       <div className="text-right px-4 mt-2">
-        <button 
-          className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
-          onClick={toggleUserType}
-        >
-          {userType === "consumer" ? (
-            <>
-              <Store className="w-4 h-4" />
-              切換至商家端
-            </>
-          ) : (
-            <>
-              <User className="w-4 h-4" />
-              切換至用戶端
-            </>
-          )}
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors px-3 py-2 rounded-lg hover:bg-secondary">
+              切換身份別
+              <ChevronDown className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem 
+              onClick={() => setUserType("consumer")}
+              className={userType === "consumer" ? "bg-secondary" : ""}
+            >
+              <User className="w-4 h-4 mr-2" />
+              用戶端
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => setUserType("merchant")}
+              className={userType === "merchant" ? "bg-secondary" : ""}
+            >
+              <Store className="w-4 h-4 mr-2" />
+              商家端
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
-        {/* User type indicator */}
-        <div className="mb-6">
-          <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
-            userType === "consumer" 
-              ? "bg-primary/10 text-primary" 
-              : "bg-accent/10 text-accent"
-          }`}>
-            {userType === "consumer" ? (
-              <>
-                <User className="w-4 h-4" />
-                用戶端
-              </>
-            ) : (
-              <>
-                <Store className="w-4 h-4" />
-                商家端
-              </>
-            )}
-          </span>
-        </div>
-
         {/* Logo text */}
         <h1 className="text-5xl font-bold text-foreground mb-3 tracking-wide">
           Mibu

@@ -6,7 +6,7 @@ const CollectionContent = () => {
   const [expandedCounty, setExpandedCounty] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
-  const { getGroupedByCounty, getTotalCount, getTotalCheckIns } = useCollection();
+  const { getGroupedByCounty, getTotalCount, getTotalCheckIns, toggleFavorite, toggleBlacklist, items } = useCollection();
   const collections = getGroupedByCounty();
 
   const handleMapClick = (title: string) => {
@@ -17,6 +17,9 @@ const CollectionContent = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '/');
   };
+
+  // 根據 ID 取得項目狀態
+  const getItemById = (id: string) => items.find(item => item.id === id);
 
   return (
     <div className="animate-fade-in">
@@ -86,22 +89,31 @@ const CollectionContent = () => {
                       </span>
                     </button>
 
-                    {/* Category items */}
+                    {/* Category items - 增加右側和上方間距讓浮動按鈕有空間 */}
                     {expandedCategory === `${county.name}-${category.name}` && (
-                      <div className="ml-4 space-y-3 animate-fade-in">
-                        {category.items.map((item) => (
-                          <TripCard
-                            key={item.id}
-                            date={formatDate(item.lastCollectedAt)}
-                            duration={item.duration || ""}
-                            category={item.category}
-                            title={item.title}
-                            description={item.description}
-                            checkInCount={item.checkInCount}
-                            showProgress={true}
-                            onMapClick={() => handleMapClick(item.title)}
-                          />
-                        ))}
+                      <div className="ml-4 mr-3 space-y-6 pt-3 animate-fade-in">
+                        {category.items.map((item) => {
+                          const currentItem = getItemById(item.id);
+                          return (
+                            <TripCard
+                              key={item.id}
+                              id={item.id}
+                              date={formatDate(item.lastCollectedAt)}
+                              duration={item.duration || ""}
+                              category={item.category}
+                              title={item.title}
+                              description={item.description}
+                              checkInCount={item.checkInCount}
+                              showProgress={true}
+                              showActions={true}
+                              isFavorite={currentItem?.isFavorite || false}
+                              isBlacklisted={currentItem?.isBlacklisted || false}
+                              onToggleFavorite={toggleFavorite}
+                              onToggleBlacklist={toggleBlacklist}
+                              onMapClick={() => handleMapClick(item.title)}
+                            />
+                          );
+                        })}
                       </div>
                     )}
                   </div>
