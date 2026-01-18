@@ -144,12 +144,12 @@ const ItemBox = () => {
           <button
             key={i}
             onClick={() => handleItemClick(currentItem)}
-            className={`aspect-square rounded-xl border flex items-center justify-center relative transition-all active:scale-95 ${getItemColor(currentItem.type)}`}
+            className={`aspect-square rounded-xl border flex items-center justify-center relative transition-all duration-200 hover:scale-105 hover:shadow-medium active:scale-95 ${getItemColor(currentItem.type)} ${expiringSoon ? 'animate-pulse-soft' : ''}`}
           >
             {getItemIcon(currentItem.type)}
             {/* Expiry warning badge */}
             {expiringSoon && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center animate-bounce-soft">
                 <AlertTriangle className="w-2.5 h-2.5 text-white" />
               </div>
             )}
@@ -160,7 +160,7 @@ const ItemBox = () => {
         slots.push(
           <div
             key={i}
-            className="aspect-square rounded-xl border border-dashed border-border/50 bg-secondary/30"
+            className="aspect-square rounded-xl border border-dashed border-border/30 bg-secondary/20"
           />
         );
       }
@@ -170,18 +170,18 @@ const ItemBox = () => {
   };
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       {/* Capacity indicator */}
-      <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center justify-between text-sm bg-card rounded-xl p-4 shadow-soft">
         <span className="text-muted">道具箱容量</span>
-        <span className="text-foreground">
-          <span className="text-primary font-bold">{usedSlots}</span> / {TOTAL_SLOTS}
+        <span className="text-foreground font-medium">
+          <span className="text-primary font-bold text-lg">{usedSlots}</span> / {TOTAL_SLOTS}
         </span>
       </div>
 
       {/* Game-style grid */}
       <div 
-        className="grid gap-2 bg-card rounded-2xl p-3 border border-border"
+        className="grid gap-2.5 bg-card rounded-2xl p-4 border border-border shadow-soft"
         style={{ gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)` }}
       >
         {renderGrid()}
@@ -189,26 +189,26 @@ const ItemBox = () => {
 
       {/* Item detail dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-sm mx-4 rounded-2xl">
+        <DialogContent className="max-w-sm mx-4 rounded-2xl shadow-elevated animate-scale-in">
           {selectedItem && (
             <>
               <DialogHeader>
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getItemColor(selectedItem.type)}`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-soft ${getItemColor(selectedItem.type)}`}>
                     {getItemIcon(selectedItem.type)}
                   </div>
                   <div>
-                    <DialogTitle className="text-left">{selectedItem.name}</DialogTitle>
-                    <p className="text-sm text-muted">{selectedItem.merchantName}</p>
+                    <DialogTitle className="text-left text-lg">{selectedItem.name}</DialogTitle>
+                    <p className="text-sm text-muted mt-0.5">{selectedItem.merchantName}</p>
                   </div>
                 </div>
               </DialogHeader>
 
               <div className="space-y-4 py-4">
-                <div className="space-y-2">
+                <div className="space-y-3 bg-secondary/50 rounded-xl p-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">說明</span>
-                    <span className="text-foreground">{selectedItem.description}</span>
+                    <span className="text-foreground font-medium">{selectedItem.description}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">有效期限</span>
@@ -223,7 +223,8 @@ const ItemBox = () => {
                 <div className="flex gap-3 pt-2">
                   <Button
                     onClick={handleRedeem}
-                    className="flex-1 bg-primary hover:bg-primary/90"
+                    className="flex-1"
+                    size="lg"
                   >
                     <Check className="w-4 h-4 mr-2" />
                     核銷使用
@@ -231,7 +232,8 @@ const ItemBox = () => {
                   <Button
                     onClick={handleDelete}
                     variant="outline"
-                    className="border-red-300 text-red-500 hover:bg-red-50"
+                    size="lg"
+                    className="border-red-300 text-red-500 hover:bg-red-50 px-4"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mibu Design System - Warm coffee brown theme */
+/* Mibu Design System - Warm coffee brown theme with enhanced visuals */
 
 @layer base {
   :root {
@@ -46,6 +46,11 @@
     /* Radius - More rounded for friendly feel */
     --radius: 1rem;
 
+    /* Enhanced shadow system */
+    --shadow-soft: 0 2px 8px -2px hsl(30 20% 20% / 0.08), 0 1px 2px -1px hsl(30 20% 20% / 0.04);
+    --shadow-medium: 0 4px 16px -4px hsl(30 20% 20% / 0.12), 0 2px 4px -2px hsl(30 20% 20% / 0.06);
+    --shadow-elevated: 0 12px 32px -8px hsl(30 20% 20% / 0.16), 0 4px 8px -4px hsl(30 20% 20% / 0.08);
+
     /* Sidebar (keeping for compatibility) */
     --sidebar-background: 40 33% 97%;
     --sidebar-foreground: 30 24% 29%;
@@ -78,6 +83,9 @@
     --border: 30 20% 87%;
     --input: 35 30% 93%;
     --ring: 30 22% 44%;
+    --shadow-soft: 0 2px 8px -2px hsl(30 20% 20% / 0.08), 0 1px 2px -1px hsl(30 20% 20% / 0.04);
+    --shadow-medium: 0 4px 16px -4px hsl(30 20% 20% / 0.12), 0 2px 4px -2px hsl(30 20% 20% / 0.06);
+    --shadow-elevated: 0 12px 32px -8px hsl(30 20% 20% / 0.16), 0 4px 8px -4px hsl(30 20% 20% / 0.08);
     --sidebar-background: 40 33% 97%;
     --sidebar-foreground: 30 24% 29%;
     --sidebar-primary: 30 22% 44%;
@@ -109,12 +117,45 @@
     background-color: hsl(var(--background));
   }
 
+  /* Enhanced button press effect */
   .btn-press {
-    @apply transition-transform duration-150 active:scale-95;
+    @apply transition-all duration-150 active:scale-[0.97] active:brightness-[0.97];
   }
 
+  /* Card hover with enhanced shadow */
   .card-hover {
-    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+    @apply transition-all duration-200 hover:-translate-y-0.5;
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .card-hover:hover {
+    box-shadow: var(--shadow-medium);
+  }
+
+  /* Shadow utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Spacing utilities */
+  .section-spacing {
+    @apply space-y-6;
+  }
+
+  .card-padding {
+    @apply p-5;
+  }
+
+  .page-padding {
+    @apply px-5;
   }
 
   /* Safe area utilities for native apps */
@@ -138,5 +179,20 @@
   /* Full height utilities for mobile */
   .h-screen-safe {
     height: 100dvh;
+  }
+
+  /* Interactive feedback */
+  .interactive-lift {
+    @apply transition-all duration-200;
+  }
+  
+  .interactive-lift:hover {
+    @apply -translate-y-0.5;
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .interactive-lift:active {
+    @apply translate-y-0 scale-[0.98];
+    box-shadow: var(--shadow-soft);
   }
 }

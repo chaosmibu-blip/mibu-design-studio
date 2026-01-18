@@ -1,5 +1,5 @@
 import PageLayout from "@/components/layout/PageLayout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { 
   User, 
   Globe, 
@@ -92,36 +92,40 @@ const SettingsPage = () => {
 
   return (
     <PageLayout>
-      <div className="px-4 pt-6 space-y-6">
+      <div className="page-padding pt-6 section-spacing pb-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between animate-fade-in">
           <h1 className="text-2xl font-bold text-foreground">設定</h1>
           <img
             src={mibuPeek}
             alt="Mibu"
-            className="w-12 h-12 object-contain"
+            className="w-14 h-14 object-contain"
           />
         </div>
 
         {/* Settings groups */}
-        {settingGroups.map((group) => (
-          <div key={group.title} className="space-y-2">
+        {settingGroups.map((group, groupIndex) => (
+          <div 
+            key={group.title} 
+            className="space-y-2 animate-slide-up" 
+            style={{ animationDelay: `${groupIndex * 0.1}s` }}
+          >
             <h2 className="text-sm font-medium text-muted px-1">{group.title}</h2>
-            <Card className="rounded-2xl border-border overflow-hidden">
+            <Card className="rounded-2xl border-border overflow-hidden shadow-soft">
               {group.items.map((item, index) => (
                 <button
                   key={item.label}
                   onClick={item.action}
-                  className={`w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors btn-press ${
+                  className={`w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-all duration-200 btn-press ${
                     index !== group.items.length - 1 ? "border-b border-border" : ""
                   }`}
                 >
-                  <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center">
+                  <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shadow-soft">
                     <item.icon className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="flex-1 text-left text-foreground">{item.label}</span>
+                  <span className="flex-1 text-left text-foreground font-medium">{item.label}</span>
                   {item.badge && (
-                    <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                    <span className="text-xs px-2.5 py-1 bg-primary/10 text-primary rounded-full font-medium">
                       {item.badge}
                     </span>
                   )}
@@ -136,7 +140,7 @@ const SettingsPage = () => {
                     />
                   )}
                   {item.hasArrow && (
-                    <ChevronRight className="w-5 h-5 text-muted" />
+                    <ChevronRight className="w-5 h-5 text-muted transition-transform duration-200 group-hover:translate-x-0.5" />
                   )}
                 </button>
               ))}
@@ -145,26 +149,26 @@ const SettingsPage = () => {
         ))}
 
         {/* Danger zone */}
-        <div className="space-y-2">
+        <div className="space-y-2 animate-slide-up" style={{ animationDelay: "0.4s" }}>
           <h2 className="text-sm font-medium text-muted px-1">帳號管理</h2>
-          <Card className="rounded-2xl border-border overflow-hidden">
-            <button className="w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors border-b border-border btn-press">
-              <div className="w-10 h-10 bg-accent/20 rounded-xl flex items-center justify-center">
+          <Card className="rounded-2xl border-border overflow-hidden shadow-soft">
+            <button className="w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-all duration-200 border-b border-border btn-press">
+              <div className="w-11 h-11 bg-accent/20 rounded-xl flex items-center justify-center">
                 <LogOut className="w-5 h-5 text-accent" />
               </div>
-              <span className="flex-1 text-left text-foreground">登出</span>
+              <span className="flex-1 text-left text-foreground font-medium">登出</span>
             </button>
-            <button className="w-full flex items-center gap-4 p-4 hover:bg-destructive/10 transition-colors btn-press">
-              <div className="w-10 h-10 bg-destructive rounded-xl flex items-center justify-center">
+            <button className="w-full flex items-center gap-4 p-4 hover:bg-destructive/20 transition-all duration-200 btn-press">
+              <div className="w-11 h-11 bg-destructive rounded-xl flex items-center justify-center">
                 <Trash2 className="w-5 h-5 text-destructive-foreground" />
               </div>
-              <span className="flex-1 text-left text-destructive-foreground">刪除帳號</span>
+              <span className="flex-1 text-left text-destructive-foreground font-medium">刪除帳號</span>
             </button>
           </Card>
         </div>
 
         {/* App version */}
-        <p className="text-center text-xs text-muted py-4">
+        <p className="text-center text-xs text-muted py-4 animate-fade-in">
           Mibu v1.0.0
         </p>
       </div>

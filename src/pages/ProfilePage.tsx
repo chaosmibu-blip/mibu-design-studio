@@ -70,12 +70,12 @@ const ProfilePage = () => {
 
   return (
     <PageLayout showNav={false}>
-      <div className="px-4 pt-6 space-y-6 pb-8">
+      <div className="page-padding pt-6 section-spacing pb-8">
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 animate-fade-in">
           <button
             onClick={() => window.history.back()}
-            className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center shadow-sm btn-press"
+            className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-soft btn-press"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
@@ -83,16 +83,16 @@ const ProfilePage = () => {
         </div>
 
         {/* Avatar section */}
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 animate-slide-up">
           <div className="relative">
-            <div className="w-28 h-28 rounded-full bg-secondary border-4 border-card shadow-lg overflow-hidden">
+            <div className="w-28 h-28 rounded-full bg-secondary border-4 border-card shadow-medium overflow-hidden">
               <img
                 src={mibuHoodie}
                 alt="頭像"
                 className="w-full h-full object-cover"
               />
             </div>
-            <button className="absolute bottom-0 right-0 w-9 h-9 bg-primary rounded-full flex items-center justify-center shadow-md btn-press">
+            <button className="absolute bottom-0 right-0 w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-medium btn-press">
               <Camera className="w-4 h-4 text-primary-foreground" />
             </button>
           </div>
@@ -100,15 +100,15 @@ const ProfilePage = () => {
         </div>
 
         {/* Basic info */}
-        <Card className="rounded-2xl border-border">
-          <CardContent className="p-4 space-y-4">
+        <Card className="rounded-2xl border-border shadow-soft animate-slide-up" style={{ animationDelay: "0.1s" }}>
+          <CardContent className="p-5 space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">暱稱</label>
               <Input
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="輸入您的暱稱"
-                className="h-12 rounded-xl bg-secondary border-border focus:border-primary"
+                className="h-12 rounded-xl bg-secondary border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
 
@@ -118,7 +118,7 @@ const ProfilePage = () => {
                 value={realName}
                 onChange={(e) => setRealName(e.target.value)}
                 placeholder="輸入您的真實姓名"
-                className="h-12 rounded-xl bg-secondary border-border focus:border-primary"
+                className="h-12 rounded-xl bg-secondary border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
 
@@ -128,7 +128,7 @@ const ProfilePage = () => {
                 <SelectTrigger className="h-12 rounded-xl bg-secondary border-border">
                   <SelectValue placeholder="請選擇性別" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-card border-border shadow-elevated z-50">
                   <SelectItem value="male">男</SelectItem>
                   <SelectItem value="female">女</SelectItem>
                   <SelectItem value="other">其他</SelectItem>
@@ -143,14 +143,14 @@ const ProfilePage = () => {
                 type="date"
                 value={birthday}
                 onChange={(e) => setBirthday(e.target.value)}
-                className="h-12 rounded-xl bg-secondary border-border focus:border-primary"
+                className="h-12 rounded-xl bg-secondary border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Travel preferences */}
-        <div className="space-y-3">
+        <div className="space-y-3 animate-slide-up" style={{ animationDelay: "0.2s" }}>
           <h2 className="text-sm font-medium text-foreground">旅遊偏好</h2>
           <div className="flex flex-wrap gap-2">
             {interestTags.map((tag) => {
@@ -159,37 +159,37 @@ const ProfilePage = () => {
                 <button
                   key={tag}
                   onClick={() => toggleInterest(tag)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all btn-press ${
+                  className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 btn-press ${
                     isSelected
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "bg-card text-foreground border border-border hover:border-primary"
+                      ? "bg-primary text-primary-foreground shadow-medium scale-105"
+                      : "bg-card text-foreground border border-border hover:border-primary/50 hover:bg-secondary"
                   }`}
                 >
-                  {isSelected && <Check className="w-3 h-3 inline mr-1" />}
+                  {isSelected && <Check className="w-3 h-3 inline mr-1.5" />}
                   {tag}
                 </button>
               );
             })}
           </div>
           <p className="text-xs text-muted">
-            已選擇 {selectedInterests.length} 個偏好
+            已選擇 <span className="text-primary font-medium">{selectedInterests.length}</span> 個偏好
           </p>
         </div>
 
         {/* Personal taboos */}
-        <Card className="rounded-2xl border-border">
-          <CardContent className="p-4 space-y-3">
+        <Card className="rounded-2xl border-border shadow-soft animate-slide-up" style={{ animationDelay: "0.3s" }}>
+          <CardContent className="p-5 space-y-3">
             <label className="text-sm font-medium text-foreground">個人禁忌</label>
             <div className="flex flex-wrap gap-2">
               {taboos.map((taboo) => (
                 <span
                   key={taboo}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-secondary rounded-full text-sm"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-secondary rounded-full text-sm animate-scale-in"
                 >
                   {taboo}
                   <button
                     onClick={() => removeTaboo(taboo)}
-                    className="w-4 h-4 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted"
+                    className="w-5 h-5 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -201,14 +201,14 @@ const ProfilePage = () => {
                 value={newTaboo}
                 onChange={(e) => setNewTaboo(e.target.value)}
                 placeholder="例如：海鮮、花生..."
-                className="h-10 rounded-xl bg-secondary border-border"
+                className="h-11 rounded-xl bg-secondary border-border"
                 onKeyDown={(e) => e.key === "Enter" && addTaboo()}
               />
               <Button
                 onClick={addTaboo}
                 size="icon"
                 variant="outline"
-                className="h-10 w-10 rounded-xl flex-shrink-0"
+                className="h-11 w-11 rounded-xl flex-shrink-0"
               >
                 <Plus className="w-4 h-4" />
               </Button>
@@ -217,19 +217,19 @@ const ProfilePage = () => {
         </Card>
 
         {/* Medical history */}
-        <Card className="rounded-2xl border-border">
-          <CardContent className="p-4 space-y-3">
+        <Card className="rounded-2xl border-border shadow-soft animate-slide-up" style={{ animationDelay: "0.4s" }}>
+          <CardContent className="p-5 space-y-3">
             <label className="text-sm font-medium text-foreground">疾病史</label>
             <div className="flex flex-wrap gap-2">
               {medicalHistory.map((item) => (
                 <span
                   key={item}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-secondary rounded-full text-sm"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-secondary rounded-full text-sm animate-scale-in"
                 >
                   {item}
                   <button
                     onClick={() => removeMedical(item)}
-                    className="w-4 h-4 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted"
+                    className="w-5 h-5 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -241,14 +241,14 @@ const ProfilePage = () => {
                 value={newMedical}
                 onChange={(e) => setNewMedical(e.target.value)}
                 placeholder="例如：糖尿病、高血壓..."
-                className="h-10 rounded-xl bg-secondary border-border"
+                className="h-11 rounded-xl bg-secondary border-border"
                 onKeyDown={(e) => e.key === "Enter" && addMedical()}
               />
               <Button
                 onClick={addMedical}
                 size="icon"
                 variant="outline"
-                className="h-10 w-10 rounded-xl flex-shrink-0"
+                className="h-11 w-11 rounded-xl flex-shrink-0"
               >
                 <Plus className="w-4 h-4" />
               </Button>
@@ -257,22 +257,22 @@ const ProfilePage = () => {
         </Card>
 
         {/* Emergency contact */}
-        <Card className="rounded-2xl border-border">
-          <CardContent className="p-4 space-y-4">
+        <Card className="rounded-2xl border-border shadow-soft animate-slide-up" style={{ animationDelay: "0.5s" }}>
+          <CardContent className="p-5 space-y-4">
             <label className="text-sm font-medium text-foreground">緊急聯絡人</label>
             <div className="space-y-3">
               <Input
                 value={emergencyName}
                 onChange={(e) => setEmergencyName(e.target.value)}
                 placeholder="聯絡人姓名"
-                className="h-12 rounded-xl bg-secondary border-border focus:border-primary"
+                className="h-12 rounded-xl bg-secondary border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
               <Input
                 value={emergencyPhone}
                 onChange={(e) => setEmergencyPhone(e.target.value)}
                 placeholder="聯絡人電話"
                 type="tel"
-                className="h-12 rounded-xl bg-secondary border-border focus:border-primary"
+                className="h-12 rounded-xl bg-secondary border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
           </CardContent>
@@ -281,7 +281,8 @@ const ProfilePage = () => {
         {/* Save button */}
         <Button
           onClick={handleSave}
-          className="w-full h-14 text-base font-medium rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-md btn-press"
+          size="lg"
+          className="w-full h-14 text-base font-medium rounded-2xl shadow-medium"
         >
           儲存變更
         </Button>
