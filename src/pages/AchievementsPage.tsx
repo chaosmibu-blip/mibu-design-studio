@@ -1,309 +1,207 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
-import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Trophy, Map, Utensils, Camera, Star, Users, Calendar, Sparkles, ArrowLeft, Zap } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, Trophy, Star } from "lucide-react";
 import LevelBadge from "@/components/LevelBadge";
 import ExperienceBar from "@/components/ExperienceBar";
-import { useGameProgress, LEVEL_CONFIG } from "@/hooks/useGameProgress";
-
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  category: "explore" | "collect" | "social" | "special";
-  progress: number;
-  target: number;
-  isUnlocked: boolean;
-  xpReward: number;
-}
-
-const achievements: Achievement[] = [
-  // 探索類
-  { 
-    id: "first_gacha", 
-    name: "初次冒險", 
-    description: "完成第一次扭蛋", 
-    icon: <Sparkles className="w-6 h-6" />, 
-    category: "explore", 
-    progress: 1, 
-    target: 1, 
-    isUnlocked: true,
-    xpReward: 30
-  },
-  { 
-    id: "explorer_10", 
-    name: "小小探索家", 
-    description: "完成 10 次扭蛋", 
-    icon: <Map className="w-6 h-6" />, 
-    category: "explore", 
-    progress: 7, 
-    target: 10, 
-    isUnlocked: false,
-    xpReward: 50
-  },
-  { 
-    id: "explorer_50", 
-    name: "資深探索家", 
-    description: "完成 50 次扭蛋", 
-    icon: <Map className="w-6 h-6" />, 
-    category: "explore", 
-    progress: 7, 
-    target: 50, 
-    isUnlocked: false,
-    xpReward: 100
-  },
-  
-  // 收集類
-  { 
-    id: "foodie_10", 
-    name: "美食獵人", 
-    description: "收集 10 個美食類景點", 
-    icon: <Utensils className="w-6 h-6" />, 
-    category: "collect", 
-    progress: 4, 
-    target: 10, 
-    isUnlocked: false,
-    xpReward: 50
-  },
-  { 
-    id: "foodie_50", 
-    name: "饕餮美食家", 
-    description: "收集 50 個美食類景點", 
-    icon: <Utensils className="w-6 h-6" />, 
-    category: "collect", 
-    progress: 4, 
-    target: 50, 
-    isUnlocked: false,
-    xpReward: 100
-  },
-  { 
-    id: "photographer", 
-    name: "打卡達人", 
-    description: "完成 50 次掃碼打卡", 
-    icon: <Camera className="w-6 h-6" />, 
-    category: "collect", 
-    progress: 23, 
-    target: 50, 
-    isUnlocked: false,
-    xpReward: 80
-  },
-  
-  // 社交類
-  { 
-    id: "consecutive_7", 
-    name: "忠實粉絲", 
-    description: "連續 7 天登入", 
-    icon: <Calendar className="w-6 h-6" />, 
-    category: "social", 
-    progress: 3, 
-    target: 7, 
-    isUnlocked: false,
-    xpReward: 50
-  },
-  { 
-    id: "share_trip", 
-    name: "分享達人", 
-    description: "分享行程給 5 位好友", 
-    icon: <Users className="w-6 h-6" />, 
-    category: "social", 
-    progress: 2, 
-    target: 5, 
-    isUnlocked: false,
-    xpReward: 60
-  },
-  
-  // 特殊類
-  { 
-    id: "taipei_master", 
-    name: "台北通", 
-    description: "收集台北市全部區域景點", 
-    icon: <Star className="w-6 h-6" />, 
-    category: "special", 
-    progress: 3, 
-    target: 12, 
-    isUnlocked: false,
-    xpReward: 150
-  },
-  { 
-    id: "diamond_card", 
-    name: "鑽石收藏家", 
-    description: "擁有一張鑽石等級圖鑑卡", 
-    icon: <Trophy className="w-6 h-6" />, 
-    category: "special", 
-    progress: 1, 
-    target: 1, 
-    isUnlocked: true,
-    xpReward: 100
-  },
-];
-
-const categoryNames: Record<string, string> = {
-  explore: "探索成就",
-  collect: "收集成就",
-  social: "社交成就",
-  special: "特殊成就",
-};
+import DailyQuests from "@/components/DailyQuests";
+import { CumulativeAchievementCard, OneTimeAchievementCard } from "@/components/AchievementCard";
+import { useGameProgress, LEVEL_TIERS } from "@/hooks/useGameProgress";
+import { useAchievements, CATEGORY_NAMES } from "@/hooks/useAchievements";
+import { useDailyQuests } from "@/hooks/useDailyQuests";
 
 const AchievementsPage = () => {
-  const { progress, currentLevel, nextLevel, progressToNextLevel } = useGameProgress();
-  const unlockedCount = achievements.filter(a => a.isUnlocked).length;
-  const totalCount = achievements.length;
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("daily");
+  const { 
+    currentLevel, 
+    currentTier,
+    xpToNextLevel,
+    xpInCurrentLevel,
+    xpNeededForNextLevel,
+    progress
+  } = useGameProgress();
+  const { cumulativeAchievements, oneTimeAchievements, stats } = useAchievements();
+  const { oneTimeQuests, oneTimeProgress } = useDailyQuests();
 
-  const groupedAchievements = achievements.reduce((acc, achievement) => {
-    if (!acc[achievement.category]) {
-      acc[achievement.category] = [];
-    }
-    acc[achievement.category].push(achievement);
+  // 按類別分組成就
+  const groupedCumulative = cumulativeAchievements.reduce((acc, achievement) => {
+    const cat = achievement.category;
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(achievement);
     return acc;
-  }, {} as Record<string, Achievement[]>);
+  }, {} as Record<string, typeof cumulativeAchievements>);
+
+  const groupedOneTime = oneTimeAchievements.reduce((acc, achievement) => {
+    const cat = achievement.category;
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(achievement);
+    return acc;
+  }, {} as Record<string, typeof oneTimeAchievements>);
 
   return (
     <PageLayout showNav={false}>
-      <div className="px-4 pt-6 pb-4 space-y-6">
-        {/* Header with back button */}
-        <div className="flex items-center gap-4 mb-2">
+      <div className="page-padding pt-6 section-spacing pb-8">
+        {/* Header */}
+        <div className="flex items-center gap-4 animate-fade-in">
           <button
-            onClick={() => window.history.back()}
-            className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center shadow-sm btn-press"
+            onClick={() => navigate(-1)}
+            className="w-11 h-11 rounded-full bg-card border border-border flex items-center justify-center shadow-soft btn-press"
           >
             <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
-          <h1 className="text-xl font-bold text-foreground">我的成就</h1>
+          <h1 className="text-xl font-bold text-foreground">成就與任務</h1>
         </div>
 
-        {/* Level Progress Card */}
-        <Card className="rounded-2xl border-border shadow-soft overflow-hidden p-5">
-          <div className="flex items-center gap-4 mb-4">
-            <LevelBadge 
-              level={currentLevel.level} 
-              name={currentLevel.name}
-              size="lg"
-            />
-          </div>
-          <ExperienceBar
-            currentXP={progress.currentXP}
-            nextLevelXP={nextLevel?.minXP ?? null}
-            progress={progressToNextLevel}
-            size="lg"
-          />
-          
-          {/* Level rewards preview */}
-          <div className="mt-4 pt-4 border-t border-border">
-            <h4 className="text-sm font-medium text-muted mb-3">等級獎勵</h4>
-            <div className="grid grid-cols-4 gap-2">
-              {LEVEL_CONFIG.slice(0, 8).map((level) => (
-                <div 
-                  key={level.level}
-                  className={`p-2 rounded-lg text-center ${
-                    currentLevel.level >= level.level 
-                      ? "bg-primary/10 border border-primary/30" 
-                      : "bg-secondary/50 border border-border"
-                  }`}
-                >
-                  <div className={`text-xs font-bold ${
-                    currentLevel.level >= level.level ? "text-primary" : "text-muted"
-                  }`}>
-                    Lv.{level.level}
-                  </div>
-                  <div className={`text-[10px] mt-0.5 ${
-                    currentLevel.level >= level.level ? "text-foreground" : "text-muted"
-                  }`}>
-                    {currentLevel.level >= level.level ? "✓" : level.reward.split(" ")[0]}
-                  </div>
-                </div>
-              ))}
+        {/* 等級進度卡片 */}
+        <Card className="rounded-2xl border-border shadow-medium overflow-hidden animate-slide-up">
+          <div className="bg-gradient-to-br from-primary/10 via-card to-accent/10 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <LevelBadge level={currentLevel} size="lg" />
+              <div className="text-right">
+                <p className="text-sm text-muted">總經驗值</p>
+                <p className="text-xl font-bold text-foreground">{progress.currentXP} XP</p>
+              </div>
             </div>
+            
+            <ExperienceBar 
+              current={xpInCurrentLevel}
+              max={xpNeededForNextLevel}
+              level={currentLevel}
+            />
+            
+            {currentLevel < 99 && (
+              <p className="text-center text-sm text-muted mt-3">
+                還需 <span className="text-primary font-semibold">{xpToNextLevel} XP</span> 升到 Lv.{currentLevel + 1}
+              </p>
+            )}
           </div>
         </Card>
 
-        {/* Stats header */}
-        <div className="text-center space-y-2">
-          <div className="w-16 h-16 mx-auto bg-yellow-500/20 rounded-full flex items-center justify-center">
-            <Trophy className="w-8 h-8 text-yellow-500" />
-          </div>
-          <p className="text-sm text-muted">
-            已解鎖 {unlockedCount} / {totalCount} 個成就
-          </p>
-          <Progress 
-            value={(unlockedCount / totalCount) * 100} 
-            className="h-2 max-w-xs mx-auto"
-          />
+        {/* 統計概覽 */}
+        <div className="grid grid-cols-3 gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+          <Card className="rounded-xl border-border shadow-soft">
+            <CardContent className="p-3 text-center">
+              <Trophy className="w-5 h-5 mx-auto text-amber-500 mb-1" />
+              <p className="text-lg font-bold text-foreground">{stats.totalUnlocked}</p>
+              <p className="text-xs text-muted">已解鎖</p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-xl border-border shadow-soft">
+            <CardContent className="p-3 text-center">
+              <Star className="w-5 h-5 mx-auto text-primary mb-1" />
+              <p className="text-lg font-bold text-foreground">{currentTier.tier}</p>
+              <p className="text-xs text-muted">當前階段</p>
+            </CardContent>
+          </Card>
+          <Card className="rounded-xl border-border shadow-soft">
+            <CardContent className="p-3 text-center">
+              <span className="text-xl">🔥</span>
+              <p className="text-lg font-bold text-foreground">{progress.dailyLoginStreak}</p>
+              <p className="text-xs text-muted">連續登入</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Achievement categories */}
-        {Object.entries(groupedAchievements).map(([category, categoryAchievements]) => (
-          <div key={category} className="space-y-3">
-            <h2 className="text-sm font-medium text-muted px-1">{categoryNames[category]}</h2>
+        {/* 標籤頁 */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="animate-slide-up" style={{ animationDelay: "0.15s" }}>
+          <TabsList className="w-full grid grid-cols-4 h-11 rounded-xl bg-secondary p-1">
+            <TabsTrigger value="daily" className="rounded-lg text-xs">每日</TabsTrigger>
+            <TabsTrigger value="onetime" className="rounded-lg text-xs">一次性</TabsTrigger>
+            <TabsTrigger value="cumulative" className="rounded-lg text-xs">累計</TabsTrigger>
+            <TabsTrigger value="levels" className="rounded-lg text-xs">等級</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="daily" className="mt-4 space-y-4">
+            <DailyQuests />
             
-            <div className="space-y-3">
-              {categoryAchievements.map((achievement) => (
-                <Card
-                  key={achievement.id}
-                  className={`p-4 rounded-2xl border transition-all ${
-                    achievement.isUnlocked 
-                      ? "border-yellow-500/30 bg-yellow-500/5" 
-                      : "border-border opacity-70"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    {/* Icon */}
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      achievement.isUnlocked 
-                        ? "bg-yellow-500/20 text-yellow-500" 
-                        : "bg-secondary text-muted"
-                    }`}>
-                      {achievement.icon}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className={`font-bold ${
-                          achievement.isUnlocked ? "text-foreground" : "text-muted"
-                        }`}>
-                          {achievement.name}
-                        </h3>
-                        {achievement.isUnlocked && (
-                          <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-600 rounded-full">
-                            ✓ 已達成
-                          </span>
-                        )}
+            {/* 一次性任務 */}
+            <div className="space-y-3 pt-4 border-t border-border">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-foreground">新手任務</h3>
+                <span className="text-sm text-muted">
+                  {oneTimeProgress.completed}/{oneTimeProgress.total} 完成
+                </span>
+              </div>
+              {oneTimeQuests.map((quest) => (
+                <Card key={quest.id} className={`rounded-xl border-border shadow-soft ${quest.isCompleted ? "bg-primary/5" : ""}`}>
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg ${quest.isCompleted ? "bg-primary/20" : "bg-secondary"}`}>
+                        {quest.icon}
                       </div>
-                      <p className="text-xs text-muted mb-2">{achievement.description}</p>
-                      
-                      <div className="flex items-center justify-between">
-                        {!achievement.isUnlocked ? (
-                          <div className="flex-1 space-y-1">
-                            <Progress 
-                              value={(achievement.progress / achievement.target) * 100} 
-                              className="h-1.5"
-                            />
-                            <p className="text-xs text-muted">
-                              {achievement.progress} / {achievement.target}
-                            </p>
-                          </div>
-                        ) : (
-                          <div />
-                        )}
-                        
-                        {/* XP Reward */}
-                        <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                          achievement.isUnlocked 
-                            ? "bg-green-500/10 text-green-600" 
-                            : "bg-primary/10 text-primary"
-                        }`}>
-                          <Zap className="w-3 h-3" />
-                          +{achievement.xpReward} XP
-                        </div>
+                      <div className="flex-1">
+                        <h4 className={`text-sm font-medium ${quest.isCompleted ? "text-muted line-through" : "text-foreground"}`}>
+                          {quest.title}
+                        </h4>
+                        <p className="text-xs text-muted">{quest.description}</p>
                       </div>
+                      <span className={`text-xs font-medium ${quest.isCompleted ? "text-primary" : "text-accent"}`}>
+                        +{quest.xpReward} XP
+                      </span>
                     </div>
-                  </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>
-          </div>
-        ))}
+          </TabsContent>
+          
+          <TabsContent value="onetime" className="mt-4 space-y-4">
+            {Object.entries(groupedOneTime).map(([category, achievements]) => (
+              <div key={category} className="space-y-2">
+                <h3 className="font-semibold text-foreground">{CATEGORY_NAMES[category]}</h3>
+                {achievements.map((achievement) => (
+                  <OneTimeAchievementCard key={achievement.id} achievement={achievement} />
+                ))}
+              </div>
+            ))}
+          </TabsContent>
+          
+          <TabsContent value="cumulative" className="mt-4 space-y-4">
+            {Object.entries(groupedCumulative).map(([category, achievements]) => (
+              <div key={category} className="space-y-2">
+                <h3 className="font-semibold text-foreground">{CATEGORY_NAMES[category]}</h3>
+                {achievements.map((achievement) => (
+                  <CumulativeAchievementCard key={achievement.id} achievement={achievement} />
+                ))}
+              </div>
+            ))}
+          </TabsContent>
+          
+          <TabsContent value="levels" className="mt-4 space-y-3">
+            <p className="text-sm text-muted">達成等級解鎖專屬獎勵</p>
+            {LEVEL_TIERS.map((tier) => {
+              const isUnlocked = currentLevel >= tier.minLevel;
+              const isCurrent = currentLevel >= tier.minLevel && currentLevel <= tier.maxLevel;
+              return (
+                <Card 
+                  key={tier.tier} 
+                  className={`rounded-xl border-border shadow-soft ${isCurrent ? "border-primary bg-primary/5" : ""} ${!isUnlocked ? "opacity-60" : ""}`}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${isUnlocked ? "bg-gradient-to-br from-primary/20 to-accent/20" : "bg-secondary"}`}>
+                        {tier.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-foreground">{tier.name}</h4>
+                          {isCurrent && <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">目前</span>}
+                        </div>
+                        <p className="text-xs text-muted">Lv.{tier.minLevel} ~ Lv.{tier.maxLevel}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted">階段 {tier.tier}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </TabsContent>
+        </Tabs>
       </div>
     </PageLayout>
   );
