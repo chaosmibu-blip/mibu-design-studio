@@ -140,17 +140,27 @@ const ItemBox = () => {
 
       if (currentItem) {
         const expiringSoon = isExpiringSoon(currentItem.expiresAt);
+        const daysLeft = getDaysUntilExpiry(currentItem.expiresAt);
+        const expiryBorderClass = daysLeft <= 1 
+          ? 'border-2 border-red-500' 
+          : daysLeft <= 3 
+            ? 'border-2 border-orange-400' 
+            : '';
+        const expiryTextClass = daysLeft <= 1 
+          ? 'text-red-500 bg-red-500/10' 
+          : 'text-orange-500 bg-orange-500/10';
+        
         slots.push(
           <button
             key={i}
             onClick={() => handleItemClick(currentItem)}
-            className={`aspect-square rounded-xl border flex items-center justify-center relative transition-all duration-200 hover:scale-105 hover:shadow-medium active:scale-95 ${getItemColor(currentItem.type)} ${expiringSoon ? 'animate-pulse-soft' : ''}`}
+            className={`aspect-square rounded-xl border flex items-center justify-center relative transition-all duration-200 hover:scale-105 hover:shadow-medium active:scale-95 ${getItemColor(currentItem.type)} ${expiryBorderClass}`}
           >
             {getItemIcon(currentItem.type)}
-            {/* Expiry warning badge */}
+            {/* Expiry countdown badge */}
             {expiringSoon && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center animate-bounce-soft">
-                <AlertTriangle className="w-2.5 h-2.5 text-white" />
+              <div className={`absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${expiryTextClass}`}>
+                剩{daysLeft}天
               </div>
             )}
           </button>

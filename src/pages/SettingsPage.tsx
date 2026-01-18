@@ -1,3 +1,4 @@
+import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/card";
 import { 
@@ -12,17 +13,19 @@ import {
   ChevronRight,
   Moon,
   Map,
-  Trophy
+  Trophy,
+  Gift
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mibuPeek from "@/assets/mibu-peek.jpeg";
+import ReferralSystem from "@/components/ReferralSystem";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [referralOpen, setReferralOpen] = useState(false);
 
   const settingGroups = [
     {
@@ -33,6 +36,13 @@ const SettingsPage = () => {
           label: "個人資料", 
           action: () => navigate("/profile"),
           hasArrow: true 
+        },
+        { 
+          icon: Gift, 
+          label: "邀請好友賺獎勵", 
+          action: () => setReferralOpen(true),
+          hasArrow: true,
+          highlight: true
         },
         { 
           icon: Globe, 
@@ -118,12 +128,16 @@ const SettingsPage = () => {
                   onClick={item.action}
                   className={`w-full flex items-center gap-4 p-4 hover:bg-secondary/50 transition-all duration-200 btn-press ${
                     index !== group.items.length - 1 ? "border-b border-border" : ""
-                  }`}
+                  } ${item.highlight ? "bg-primary/5" : ""}`}
                 >
-                  <div className="w-11 h-11 bg-secondary rounded-xl flex items-center justify-center shadow-soft">
-                    <item.icon className="w-5 h-5 text-primary" />
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-soft ${
+                    item.highlight ? "bg-primary/20" : "bg-secondary"
+                  }`}>
+                    <item.icon className={`w-5 h-5 ${item.highlight ? "text-primary" : "text-primary"}`} />
                   </div>
-                  <span className="flex-1 text-left text-foreground font-medium">{item.label}</span>
+                  <span className={`flex-1 text-left font-medium ${
+                    item.highlight ? "text-primary" : "text-foreground"
+                  }`}>{item.label}</span>
                   {item.badge && (
                     <span className="text-xs px-2.5 py-1 bg-primary/10 text-primary rounded-full font-medium">
                       {item.badge}
@@ -172,6 +186,9 @@ const SettingsPage = () => {
           Mibu v1.0.0
         </p>
       </div>
+
+      {/* Referral System Dialog */}
+      <ReferralSystem open={referralOpen} onOpenChange={setReferralOpen} />
     </PageLayout>
   );
 };

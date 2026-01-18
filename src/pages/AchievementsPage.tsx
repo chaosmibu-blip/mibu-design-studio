@@ -1,7 +1,10 @@
 import PageLayout from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Map, Utensils, Camera, Star, Users, Calendar, Sparkles, ArrowLeft } from "lucide-react";
+import { Trophy, Map, Utensils, Camera, Star, Users, Calendar, Sparkles, ArrowLeft, Zap } from "lucide-react";
+import LevelBadge from "@/components/LevelBadge";
+import ExperienceBar from "@/components/ExperienceBar";
+import { useGameProgress, LEVEL_CONFIG } from "@/hooks/useGameProgress";
 
 interface Achievement {
   id: string;
@@ -12,6 +15,7 @@ interface Achievement {
   progress: number;
   target: number;
   isUnlocked: boolean;
+  xpReward: number;
 }
 
 const achievements: Achievement[] = [
@@ -24,7 +28,8 @@ const achievements: Achievement[] = [
     category: "explore", 
     progress: 1, 
     target: 1, 
-    isUnlocked: true 
+    isUnlocked: true,
+    xpReward: 30
   },
   { 
     id: "explorer_10", 
@@ -34,7 +39,8 @@ const achievements: Achievement[] = [
     category: "explore", 
     progress: 7, 
     target: 10, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 50
   },
   { 
     id: "explorer_50", 
@@ -44,7 +50,8 @@ const achievements: Achievement[] = [
     category: "explore", 
     progress: 7, 
     target: 50, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 100
   },
   
   // 收集類
@@ -56,7 +63,8 @@ const achievements: Achievement[] = [
     category: "collect", 
     progress: 4, 
     target: 10, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 50
   },
   { 
     id: "foodie_50", 
@@ -66,7 +74,8 @@ const achievements: Achievement[] = [
     category: "collect", 
     progress: 4, 
     target: 50, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 100
   },
   { 
     id: "photographer", 
@@ -76,7 +85,8 @@ const achievements: Achievement[] = [
     category: "collect", 
     progress: 23, 
     target: 50, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 80
   },
   
   // 社交類
@@ -88,7 +98,8 @@ const achievements: Achievement[] = [
     category: "social", 
     progress: 3, 
     target: 7, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 50
   },
   { 
     id: "share_trip", 
@@ -98,7 +109,8 @@ const achievements: Achievement[] = [
     category: "social", 
     progress: 2, 
     target: 5, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 60
   },
   
   // 特殊類
@@ -110,7 +122,8 @@ const achievements: Achievement[] = [
     category: "special", 
     progress: 3, 
     target: 12, 
-    isUnlocked: false 
+    isUnlocked: false,
+    xpReward: 150
   },
   { 
     id: "diamond_card", 
@@ -120,7 +133,8 @@ const achievements: Achievement[] = [
     category: "special", 
     progress: 1, 
     target: 1, 
-    isUnlocked: true 
+    isUnlocked: true,
+    xpReward: 100
   },
 ];
 
@@ -132,6 +146,7 @@ const categoryNames: Record<string, string> = {
 };
 
 const AchievementsPage = () => {
+  const { progress, currentLevel, nextLevel, progressToNextLevel } = useGameProgress();
   const unlockedCount = achievements.filter(a => a.isUnlocked).length;
   const totalCount = achievements.length;
 
@@ -156,6 +171,51 @@ const AchievementsPage = () => {
           </button>
           <h1 className="text-xl font-bold text-foreground">我的成就</h1>
         </div>
+
+        {/* Level Progress Card */}
+        <Card className="rounded-2xl border-border shadow-soft overflow-hidden p-5">
+          <div className="flex items-center gap-4 mb-4">
+            <LevelBadge 
+              level={currentLevel.level} 
+              name={currentLevel.name}
+              size="lg"
+            />
+          </div>
+          <ExperienceBar
+            currentXP={progress.currentXP}
+            nextLevelXP={nextLevel?.minXP ?? null}
+            progress={progressToNextLevel}
+            size="lg"
+          />
+          
+          {/* Level rewards preview */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <h4 className="text-sm font-medium text-muted mb-3">等級獎勵</h4>
+            <div className="grid grid-cols-4 gap-2">
+              {LEVEL_CONFIG.slice(0, 8).map((level) => (
+                <div 
+                  key={level.level}
+                  className={`p-2 rounded-lg text-center ${
+                    currentLevel.level >= level.level 
+                      ? "bg-primary/10 border border-primary/30" 
+                      : "bg-secondary/50 border border-border"
+                  }`}
+                >
+                  <div className={`text-xs font-bold ${
+                    currentLevel.level >= level.level ? "text-primary" : "text-muted"
+                  }`}>
+                    Lv.{level.level}
+                  </div>
+                  <div className={`text-[10px] mt-0.5 ${
+                    currentLevel.level >= level.level ? "text-foreground" : "text-muted"
+                  }`}>
+                    {currentLevel.level >= level.level ? "✓" : level.reward.split(" ")[0]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
 
         {/* Stats header */}
         <div className="text-center space-y-2">
@@ -212,17 +272,31 @@ const AchievementsPage = () => {
                       </div>
                       <p className="text-xs text-muted mb-2">{achievement.description}</p>
                       
-                      {!achievement.isUnlocked && (
-                        <div className="space-y-1">
-                          <Progress 
-                            value={(achievement.progress / achievement.target) * 100} 
-                            className="h-1.5"
-                          />
-                          <p className="text-xs text-muted">
-                            {achievement.progress} / {achievement.target}
-                          </p>
+                      <div className="flex items-center justify-between">
+                        {!achievement.isUnlocked ? (
+                          <div className="flex-1 space-y-1">
+                            <Progress 
+                              value={(achievement.progress / achievement.target) * 100} 
+                              className="h-1.5"
+                            />
+                            <p className="text-xs text-muted">
+                              {achievement.progress} / {achievement.target}
+                            </p>
+                          </div>
+                        ) : (
+                          <div />
+                        )}
+                        
+                        {/* XP Reward */}
+                        <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                          achievement.isUnlocked 
+                            ? "bg-green-500/10 text-green-600" 
+                            : "bg-primary/10 text-primary"
+                        }`}>
+                          <Zap className="w-3 h-3" />
+                          +{achievement.xpReward} XP
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </Card>

@@ -57,3 +57,28 @@ export interface InventoryItem {
   quantity: number;
   expiresAt?: string;
 }
+
+// 遊戲進度
+export interface GameProgress {
+  currentXP: number;
+  totalXP: number;
+  dailyLoginStreak: number;
+  lastLoginDate: string;
+}
+
+// 等級資訊
+export interface LevelInfo {
+  level: number;
+  name: string;
+  minXP: number;
+  reward: string;
+}
+
+// 推薦碼資料
+export interface ReferralData {
+  myCode: string;
+  invitedCount: number;
+  totalRewards: number;
+  hasUsedReferral: boolean;
+  usedReferralCode?: string;
+}
