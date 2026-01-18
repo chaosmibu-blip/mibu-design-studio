@@ -1,4 +1,4 @@
-import { Progress } from "@/components/ui/progress";
+import { MapPin } from "lucide-react";
 
 interface TripCardProps {
   duration: string;
@@ -52,14 +52,14 @@ const TripCard = ({
   
   // 根據等級決定邊框樣式 - 純用視覺呈現
   const getBorderStyle = () => {
-    if (!showProgress) return "border-border";
+    if (!showProgress) return "border-border shadow-soft";
     switch (currentLevel.level) {
-      case 1: return "border-border";
-      case 2: return "border-2 border-amber-600/60";
-      case 3: return "border-2 border-gray-400/70 ring-1 ring-gray-400/30";
-      case 4: return "border-2 border-yellow-500/80 shadow-lg shadow-yellow-500/30";
-      case 5: return "border-2 border-cyan-400/80 shadow-xl shadow-cyan-400/40 ring-2 ring-cyan-400/20";
-      default: return "border-border";
+      case 1: return "border-border shadow-soft";
+      case 2: return "border-2 border-amber-600/60 shadow-soft";
+      case 3: return "border-2 border-gray-400/70 ring-1 ring-gray-400/30 shadow-medium";
+      case 4: return "border-2 border-yellow-500/80 shadow-lg shadow-yellow-500/20";
+      case 5: return "border-2 border-cyan-400/80 shadow-xl shadow-cyan-400/30 ring-2 ring-cyan-400/20";
+      default: return "border-border shadow-soft";
     }
   };
 
@@ -89,15 +89,15 @@ const TripCard = ({
   };
 
   return (
-    <div className={`bg-card rounded-2xl overflow-hidden transition-all ${getBorderStyle()}`}>
+    <div className={`bg-card rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] ${getBorderStyle()}`}>
       {/* Left border accent */}
       <div className="flex">
         <div className={`w-1.5 flex-shrink-0 ${getAccentColor()}`} />
-        <div className="flex-1 p-4">
+        <div className="flex-1 p-5">
           {/* Header row */}
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-primary">{date || duration}</span>
-            <span className="text-xs px-3 py-1 border border-border rounded-full text-muted">
+            <span className="text-sm text-primary font-medium">{date || duration}</span>
+            <span className="text-xs px-3 py-1.5 border border-border rounded-full text-muted bg-secondary/50">
               {category}
             </span>
           </div>
@@ -125,7 +125,7 @@ const TripCard = ({
                   <span className="text-cyan-500 font-medium">✨ 最高等級</span>
                 )}
               </div>
-              <div className="relative h-2 bg-secondary rounded-full overflow-hidden">
+              <div className="relative h-2.5 bg-secondary rounded-full overflow-hidden">
                 <div 
                   className={`h-full rounded-full transition-all duration-500 ${getProgressColor()}`}
                   style={{ width: `${progress}%` }}
@@ -138,9 +138,9 @@ const TripCard = ({
           {onMapClick && (
             <button
               onClick={onMapClick}
-              className="w-full py-3 bg-background rounded-xl text-sm text-primary flex items-center justify-center gap-2 border border-border/50"
+              className="w-full py-3 bg-background rounded-xl text-sm text-primary flex items-center justify-center gap-2 border border-border/50 transition-all duration-200 hover:bg-secondary hover:border-primary/30 active:scale-[0.98]"
             >
-              <span>📍</span>
+              <MapPin className="w-4 h-4" />
               在 Google 地圖中查看
             </button>
           )}

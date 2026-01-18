@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -6,6 +6,8 @@ import TripCard from "@/components/TripCard";
 import ItemBox from "@/components/ItemBox";
 import CollectionContent from "@/components/CollectionContent";
 import { useCollection } from "@/hooks/useCollection";
+import { TabBar } from "@/components/ui/tab-bar";
+import { ChevronDown, Check, MapPin } from "lucide-react";
 import mibuLogo from "@/assets/mibu-logo.jpeg";
 
 // 國家 -> 縣市結構
@@ -28,8 +30,14 @@ const sampleResults = [
   { duration: "2-3h", category: "住宿", title: "墾丁夏都沙灘酒店", description: "私人沙灘配上蔚藍海岸，南國度假首選。" },
 ];
 
+const tabs = [
+  { id: "gacha", label: "扭蛋" },
+  { id: "collection", label: "圖鑑" },
+  { id: "items", label: "道具箱" },
+];
+
 const GachaPage = () => {
-  const [activeTab, setActiveTab] = useState<"gacha" | "collection" | "items">("gacha");
+  const [activeTab, setActiveTab] = useState<string>("gacha");
   const [selectedCountry, setSelectedCountry] = useState("台灣");
   const [selectedCounty, setSelectedCounty] = useState("宜蘭縣");
   const [gachaCount, setGachaCount] = useState([5]);
@@ -37,8 +45,15 @@ const GachaPage = () => {
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [showCountyDropdown, setShowCountyDropdown] = useState(false);
   const [currentResults, setCurrentResults] = useState<typeof sampleResults>([]);
+  const [animatingCount, setAnimatingCount] = useState(false);
 
   const { addMultipleToCollection } = useCollection();
+
+  const handleGachaCountChange = (value: number[]) => {
+    setAnimatingCount(true);
+    setGachaCount(value);
+    setTimeout(() => setAnimatingCount(false), 300);
+  };
 
   const handleGacha = () => {
     // 隨機選取扭蛋結果
@@ -65,55 +80,17 @@ const GachaPage = () => {
   return (
     <PageLayout>
       <div className="flex flex-col min-h-full">
-        {/* Connected Top Navigation Tabs */}
-        <div className="bg-background border-b border-border">
-          <div className="flex">
-            <button
-              onClick={() => {
-                setActiveTab("gacha");
-                setShowResult(false);
-              }}
-              className={`flex-1 py-4 text-sm font-medium transition-all relative ${
-                activeTab === "gacha"
-                  ? "text-primary"
-                  : "text-muted"
-              }`}
-            >
-              扭蛋
-              {activeTab === "gacha" && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("collection")}
-              className={`flex-1 py-4 text-sm font-medium transition-all relative ${
-                activeTab === "collection"
-                  ? "text-primary"
-                  : "text-muted"
-              }`}
-            >
-              圖鑑
-              {activeTab === "collection" && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("items")}
-              className={`flex-1 py-4 text-sm font-medium transition-all relative ${
-                activeTab === "items"
-                  ? "text-primary"
-                  : "text-muted"
-              }`}
-            >
-              道具箱
-              {activeTab === "items" && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-full" />
-              )}
-            </button>
-          </div>
-        </div>
+        {/* Tab Bar */}
+        <TabBar 
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={(tab) => {
+            setActiveTab(tab);
+            if (tab === "gacha") setShowResult(false);
+          }}
+        />
 
-        <div className="flex-1 px-4 pt-6 pb-4 overflow-y-auto">
+        <div className="flex-1 page-padding pt-6 pb-4 overflow-y-auto">
           {/* Items tab */}
           {activeTab === "items" && <ItemBox />}
           
@@ -124,20 +101,20 @@ const GachaPage = () => {
           {activeTab === "gacha" && (
             <>
               {!showResult ? (
-                <div className="space-y-6 animate-fade-in">
+                <div className="section-spacing animate-fade-in">
                   {/* Country selector */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">選擇國家</label>
                     <div className="relative">
                       <button
                         onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                        className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border btn-press"
+                        className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border shadow-soft btn-press"
                       >
-                        <span className="text-foreground">{selectedCountry}</span>
-                        <span className={`text-muted transition-transform ${showCountryDropdown ? "rotate-180" : ""}`}>▼</span>
+                        <span className="text-foreground font-medium">{selectedCountry}</span>
+                        <ChevronDown className={`w-5 h-5 text-muted transition-transform duration-200 ${showCountryDropdown ? "rotate-180" : ""}`} />
                       </button>
                       {showCountryDropdown && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-lg z-10 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-elevated z-50 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
                           {Object.keys(countries).map((country) => (
                             <button
                               key={country}
@@ -146,11 +123,12 @@ const GachaPage = () => {
                                 setSelectedCounty(countries[country][0]);
                                 setShowCountryDropdown(false);
                               }}
-                              className={`w-full p-4 text-left hover:bg-secondary transition-colors ${
+                              className={`w-full p-4 text-left hover:bg-secondary transition-colors flex items-center justify-between ${
                                 selectedCountry === country ? "bg-secondary text-primary font-medium" : "text-foreground"
                               }`}
                             >
                               {country}
+                              {selectedCountry === country && <Check className="w-4 h-4 text-primary" />}
                             </button>
                           ))}
                         </div>
@@ -164,13 +142,13 @@ const GachaPage = () => {
                     <div className="relative">
                       <button
                         onClick={() => setShowCountyDropdown(!showCountyDropdown)}
-                        className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border btn-press"
+                        className="w-full flex items-center justify-between p-4 bg-card rounded-2xl border border-border shadow-soft btn-press"
                       >
-                        <span className="text-foreground">{selectedCounty}</span>
-                        <span className={`text-muted transition-transform ${showCountyDropdown ? "rotate-180" : ""}`}>▼</span>
+                        <span className="text-foreground font-medium">{selectedCounty}</span>
+                        <ChevronDown className={`w-5 h-5 text-muted transition-transform duration-200 ${showCountyDropdown ? "rotate-180" : ""}`} />
                       </button>
                       {showCountyDropdown && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-lg z-10 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-2xl border border-border shadow-elevated z-50 overflow-hidden animate-scale-in max-h-60 overflow-y-auto">
                           {countries[selectedCountry]?.map((county) => (
                             <button
                               key={county}
@@ -178,11 +156,12 @@ const GachaPage = () => {
                                 setSelectedCounty(county);
                                 setShowCountyDropdown(false);
                               }}
-                              className={`w-full p-4 text-left hover:bg-secondary transition-colors ${
+                              className={`w-full p-4 text-left hover:bg-secondary transition-colors flex items-center justify-between ${
                                 selectedCounty === county ? "bg-secondary text-primary font-medium" : "text-foreground"
                               }`}
                             >
                               {county}
+                              {selectedCounty === county && <Check className="w-4 h-4 text-primary" />}
                             </button>
                           ))}
                         </div>
@@ -191,18 +170,20 @@ const GachaPage = () => {
                   </div>
 
                   {/* Gacha count slider */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 bg-card rounded-2xl p-5 border border-border shadow-soft">
                     <div className="flex items-center justify-between">
                       <label className="text-sm font-medium text-foreground">扭蛋次數</label>
-                      <span className="text-lg font-bold text-primary">{gachaCount[0]} 次</span>
+                      <span className={`text-2xl font-bold text-primary transition-transform duration-300 ${animatingCount ? 'animate-bounce-number' : ''}`}>
+                        {gachaCount[0]} 次
+                      </span>
                     </div>
                     <Slider
                       value={gachaCount}
-                      onValueChange={setGachaCount}
+                      onValueChange={handleGachaCountChange}
                       min={5}
                       max={12}
                       step={1}
-                      className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.relative]:bg-secondary [&_[data-orientation=horizontal]>.bg-primary]:bg-primary"
+                      className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_[role=slider]]:shadow-medium [&_[role=slider]]:w-6 [&_[role=slider]]:h-6 [&_.relative]:bg-secondary [&_[data-orientation=horizontal]>.bg-primary]:bg-primary"
                     />
                     <div className="flex justify-between text-xs text-muted">
                       <span>5</span>
@@ -213,43 +194,42 @@ const GachaPage = () => {
                   {/* Gacha button */}
                   <Button
                     onClick={handleGacha}
-                    className="w-full h-16 text-lg font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-press"
+                    size="lg"
+                    className="w-full h-16 text-lg font-bold rounded-2xl shadow-medium hover:shadow-elevated animate-pulse-soft"
                   >
                     開始扭蛋！
                   </Button>
                 </div>
               ) : (
-                <div className="animate-fade-in">
+                <div className="animate-fade-in section-spacing">
                   {/* Result header */}
-                  <div className="text-center mb-6">
+                  <div className="text-center">
                     <img
                       src={mibuLogo}
                       alt="Mibu"
-                      className="w-12 h-12 mx-auto mb-2 object-contain rounded-lg"
+                      className="w-14 h-14 mx-auto mb-3 object-contain rounded-xl shadow-soft"
                     />
                     <span className="text-sm font-bold text-foreground tracking-widest">MIBU</span>
                     <h2 className="text-2xl font-bold text-foreground mt-2">{selectedCounty}</h2>
                     <p className="text-sm text-muted">
-                      正在探索 <span className="text-primary">{selectedCountry}</span>
+                      正在探索 <span className="text-primary font-medium">{selectedCountry}</span>
                     </p>
-                    <p className="text-xs text-primary mt-2">
+                    <p className="text-sm text-primary mt-2 font-medium">
                       ✨ 已自動收藏 {currentResults.length} 個地點到圖鑑
                     </p>
                   </div>
 
                   {/* Main area map link */}
-                  <div className="mb-4">
-                    <button
-                      onClick={() => handleMapClick(`${selectedCountry}${selectedCounty}`)}
-                      className="w-full py-3 bg-card rounded-xl text-sm text-primary flex items-center justify-center gap-2 border border-border"
-                    >
-                      <span>📍</span>
-                      在 Google 地圖中查看
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleMapClick(`${selectedCountry}${selectedCounty}`)}
+                    className="w-full py-3.5 bg-card rounded-xl text-sm text-primary flex items-center justify-center gap-2 border border-border shadow-soft hover:shadow-medium transition-all duration-200 active:scale-[0.98]"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    在 Google 地圖中查看
+                  </button>
 
                   {/* Trip cards */}
-                  <div className="space-y-4 mb-6">
+                  <div className="space-y-4">
                     {currentResults.map((result, index) => (
                       <TripCard
                         key={index}
@@ -265,7 +245,8 @@ const GachaPage = () => {
                   {/* Re-gacha button */}
                   <Button
                     onClick={() => setShowResult(false)}
-                    className="w-full h-14 text-base font-bold rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg btn-press"
+                    size="lg"
+                    className="w-full h-14 text-base font-bold rounded-2xl shadow-medium"
                   >
                     重新扭蛋 🔄
                   </Button>
