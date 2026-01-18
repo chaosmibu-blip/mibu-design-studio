@@ -99,6 +99,46 @@ export const useCollection = () => {
     newItems.forEach(item => addToCollection(item));
   }, [addToCollection]);
 
+  // 切換我的最愛（互斥：加入時自動移除黑名單）
+  const toggleFavorite = useCallback((itemId: string) => {
+    setItems(prev => prev.map(item => {
+      if (item.id === itemId) {
+        const newFavorite = !item.isFavorite;
+        return {
+          ...item,
+          isFavorite: newFavorite,
+          isBlacklisted: newFavorite ? false : item.isBlacklisted, // 互斥
+        };
+      }
+      return item;
+    }));
+  }, []);
+
+  // 切換黑名單（互斥：加入時自動移除我的最愛）
+  const toggleBlacklist = useCallback((itemId: string) => {
+    setItems(prev => prev.map(item => {
+      if (item.id === itemId) {
+        const newBlacklisted = !item.isBlacklisted;
+        return {
+          ...item,
+          isBlacklisted: newBlacklisted,
+          isFavorite: newBlacklisted ? false : item.isFavorite, // 互斥
+        };
+      }
+      return item;
+    }));
+  }, []);
+
+  // 取得所有最愛項目
+  const getFavorites = useCallback(() => {
+    return items.filter(item => item.isFavorite);
+  }, [items]);
+
+  // 取得所有黑名單項目
+  const getBlacklisted = useCallback(() => {
+    return items.filter(item => item.isBlacklisted);
+  }, [items]);
+
   // 轉換為按縣市分類的資料結構（給 CollectionContent 使用）
   const getGroupedByCounty = useCallback((): CountyData[] => {
     const countyMap = new Map<string, Map<string, CollectionItem[]>>();
@@ -159,6 +199,10 @@ export const useCollection = () => {
     items,
     addToCollection,
     addMultipleToCollection,
+    toggleFavorite,
+    toggleBlacklist,
+    getFavorites,
+    getBlacklisted,
     getGroupedByCounty,
     getTotalCount,
     getTotalCheckIns,

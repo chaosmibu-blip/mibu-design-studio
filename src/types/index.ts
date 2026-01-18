@@ -9,6 +9,8 @@ export interface CollectionItem {
   checkInCount: number;
   firstCollectedAt: string;
   lastCollectedAt: string;
+  isFavorite?: boolean;
+  isBlacklisted?: boolean;
 }
 
 // 縣市類別資料結構
