@@ -1,53 +1,91 @@
-import { Star } from "lucide-react";
+import { getTierForLevel, LevelTier } from "@/hooks/useGameProgress";
 
 interface LevelBadgeProps {
   level: number;
-  name: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   showName?: boolean;
+  showIcon?: boolean;
 }
 
-const LevelBadge = ({ level, name, size = "md", showName = true }: LevelBadgeProps) => {
+const LevelBadge = ({ level, size = "md", showName = true, showIcon = true }: LevelBadgeProps) => {
+  const tier = getTierForLevel(level);
+
   const sizeClasses = {
-    sm: "w-8 h-8 text-xs",
-    md: "w-12 h-12 text-sm",
-    lg: "w-16 h-16 text-base",
+    sm: "w-10 h-10 text-xs",
+    md: "w-14 h-14 text-sm",
+    lg: "w-20 h-20 text-lg",
+    xl: "w-24 h-24 text-xl",
   };
 
-  const iconSizes = {
-    sm: "w-3 h-3",
-    md: "w-4 h-4",
-    lg: "w-5 h-5",
+  const nameSizeClasses = {
+    sm: "text-xs",
+    md: "text-sm",
+    lg: "text-base",
+    xl: "text-lg",
   };
 
-  const getBadgeColors = (level: number) => {
-    if (level >= 8) return "from-amber-400 via-yellow-300 to-amber-500 text-amber-900";
-    if (level >= 6) return "from-purple-400 via-purple-500 to-purple-600 text-white";
-    if (level >= 4) return "from-blue-400 via-blue-500 to-blue-600 text-white";
-    if (level >= 2) return "from-green-400 via-green-500 to-green-600 text-white";
-    return "from-gray-300 via-gray-400 to-gray-500 text-white";
+  const iconSizeClasses = {
+    sm: "text-sm",
+    md: "text-lg",
+    lg: "text-xl",
+    xl: "text-2xl",
+  };
+
+  // 品牌色漸層設計 - 根據階段使用不同顏色
+  const getBrandGradient = (tier: LevelTier) => {
+    // 使用品牌色為基調，階段越高顏色越豐富
+    if (tier.tier <= 2) {
+      return "bg-gradient-to-br from-primary/80 to-primary";
+    }
+    if (tier.tier <= 4) {
+      return "bg-gradient-to-br from-primary to-accent";
+    }
+    if (tier.tier <= 6) {
+      return "bg-gradient-to-br from-accent via-primary to-accent";
+    }
+    if (tier.tier <= 8) {
+      return `bg-gradient-to-br ${tier.colorClass}`;
+    }
+    // 最高階段使用彩虹漸層
+    return `bg-gradient-to-br ${tier.colorClass}`;
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <div 
-        className={`${sizeClasses[size]} rounded-full bg-gradient-to-br ${getBadgeColors(level)} flex items-center justify-center font-bold shadow-medium relative overflow-hidden`}
-      >
-        {/* Shine effect */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent" />
-        <span className="relative z-10">Lv.{level}</span>
+    <div className="flex items-center gap-3">
+      <div className="relative">
+        {/* 貓耳裝飾 */}
+        <div className="absolute -top-1 left-1 w-3 h-3 rounded-tl-full rounded-tr-sm bg-primary/60 rotate-[-20deg]" />
+        <div className="absolute -top-1 right-1 w-3 h-3 rounded-tr-full rounded-tl-sm bg-primary/60 rotate-[20deg]" />
+        
+        {/* 主徽章 */}
+        <div 
+          className={`${sizeClasses[size]} rounded-full ${getBrandGradient(tier)} flex flex-col items-center justify-center font-bold text-primary-foreground shadow-medium relative overflow-hidden`}
+        >
+          {/* 光澤效果 */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-white/30 via-transparent to-transparent" />
+          
+          {/* 等級數字 */}
+          <span className="relative z-10 font-bold leading-none">
+            Lv.{level}
+          </span>
+          
+          {/* 階段圖示 */}
+          {showIcon && (
+            <span className={`relative z-10 leading-none ${iconSizeClasses[size]}`}>
+              {tier.icon}
+            </span>
+          )}
+        </div>
       </div>
+      
       {showName && (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-foreground">{name}</span>
-          <div className="flex items-center gap-0.5">
-            {Array.from({ length: Math.min(level, 5) }).map((_, i) => (
-              <Star 
-                key={i} 
-                className={`${iconSizes[size]} fill-amber-400 text-amber-400`} 
-              />
-            ))}
-          </div>
+          <span className={`font-semibold text-foreground ${nameSizeClasses[size]}`}>
+            {tier.name}
+          </span>
+          <span className="text-xs text-muted">
+            第 {tier.tier} 階段
+          </span>
         </div>
       )}
     </div>
